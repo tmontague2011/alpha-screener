@@ -7,45 +7,24 @@
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body { font-family: 'Courier New', monospace; background: #f7f7f5; color: #111; min-height: 100vh; }
-
   header { background: #111; color: #fff; padding: 16px 20px; }
   header .sub { font-size: 10px; letter-spacing: 3px; text-transform: uppercase; color: #888; margin-bottom: 4px; }
   header h1 { font-size: 18px; font-weight: 700; letter-spacing: -0.5px; }
-
   .tabs { display: flex; background: #fff; border-bottom: 1px solid #e5e5e5; }
   .tab { flex: 1; padding: 12px 8px; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; cursor: pointer; border: none; background: transparent; color: #888; border-bottom: 3px solid transparent; font-family: inherit; transition: all 0.15s; }
   .tab.active { color: #111; border-bottom-color: #111; }
-
-  .panel { display: none; padding: 20px; } 
+  .panel { display: none; padding: 20px; }
   .panel.active { display: block; }
-
   .ctrl-label { font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #888; margin-bottom: 8px; font-weight: 600; }
   .section { margin-bottom: 20px; }
-
   .pills { display: flex; gap: 7px; flex-wrap: wrap; }
-  .pill {
-    padding: 8px 14px; border-radius: 5px; cursor: pointer;
-    font-size: 11px; font-family: 'Courier New', monospace; font-weight: 500;
-    border: 2px solid #ccc; background: #fff; color: #999;
-    transition: all 0.12s; -webkit-tap-highlight-color: transparent;
-  }
-  .pill.on { border-color: #1a7a42; background: #e8f5ee; color: #1a5a30; font-weight: 700; }
-
+  .pill { padding: 8px 14px; border-radius: 5px; cursor: pointer; font-size: 11px; font-family: 'Courier New', monospace; font-weight: 500; border: 2px solid #ccc; background: #fff; color: #999; transition: all 0.12s; -webkit-tap-highlight-color: transparent; }
   .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
   @media(max-width: 480px) { .grid2 { grid-template-columns: 1fr; } }
-
   .summary { font-size: 11px; color: #555; padding: 10px 14px; background: #fff; border-radius: 6px; border: 1px solid #e5e5e5; margin-bottom: 16px; line-height: 1.7; font-family: sans-serif; }
-
-  .scan-btn {
-    width: 100%; padding: 14px; border: 2px solid #111; background: #111; color: #fff;
-    cursor: pointer; font-size: 12px; letter-spacing: 3px; text-transform: uppercase;
-    font-family: inherit; border-radius: 6px; margin-bottom: 20px;
-    display: flex; align-items: center; justify-content: center; gap: 8px;
-    transition: all 0.15s;
-  }
+  .scan-btn { width: 100%; padding: 14px; border: 2px solid #111; background: #111; color: #fff; cursor: pointer; font-size: 12px; letter-spacing: 3px; text-transform: uppercase; font-family: inherit; border-radius: 6px; margin-bottom: 20px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.15s; }
   .scan-btn:hover { background: #333; }
   .scan-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
   .rcard { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: all 0.15s; }
   .rcard:hover { border-color: #bbb; }
   .rcard.open { border-color: #1a7a42; background: #f9fdf9; }
@@ -57,19 +36,15 @@
   .p1 { color: #c0392b; } .p2 { color: #b7760a; } .p3 { color: #1a7a42; }
   .rdetails { margin-top: 12px; padding-top: 12px; border-top: 1px solid #eee; }
   .rdetail { font-size: 12px; color: #444; padding: 4px 0 4px 12px; border-left: 2px solid #e5e5e5; margin-bottom: 5px; line-height: 1.6; font-family: sans-serif; }
-
   .dustin-row { display: flex; gap: 8px; margin-bottom: 16px; }
   .dustin-in { flex: 1; padding: 11px 14px; border: 1px solid #ccc; border-radius: 6px; background: #fff; color: #111; font-size: 14px; font-family: inherit; text-transform: uppercase; }
   .dustin-in::placeholder { color: #aaa; text-transform: none; font-size: 13px; }
   .vet-btn { padding: 11px 18px; border: 2px solid #111; border-radius: 6px; background: #111; color: #fff; cursor: pointer; font-size: 12px; font-family: inherit; white-space: nowrap; transition: all 0.15s; }
   .vet-btn:hover { background: #333; }
   .vet-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-
   .output { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; font-size: 12px; color: #444; white-space: pre-wrap; line-height: 1.8; font-family: sans-serif; }
-
   .spinner { width: 9px; height: 9px; border-radius: 50%; background: currentColor; display: inline-block; animation: pls 0.8s infinite; }
   @keyframes pls { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
   .footer { text-align: center; font-size: 10px; color: #bbb; letter-spacing: 1px; text-transform: uppercase; padding: 24px 20px 32px; }
 </style>
 </head>
@@ -85,7 +60,6 @@
   <button class="tab" onclick="showTab('signal')">Signal Check</button>
 </div>
 
-<!-- SCREENER -->
 <div id="tab-screener" class="panel active">
   <div class="grid2">
     <div class="section">
@@ -112,7 +86,6 @@
   <div id="scan-results"></div>
 </div>
 
-<!-- SIGNAL CHECK -->
 <div id="tab-signal" class="panel">
   <p style="font-size:13px;color:#666;margin-bottom:16px;font-family:sans-serif;line-height:1.7">
     Enter any ticker — from Dustin, the screener, news, wherever. Get a full vet: thesis, catalyst, entry, stop, target, and a verdict.
@@ -127,16 +100,15 @@
 <div class="footer">Cross-check with Grok + Gemini before executing &nbsp;·&nbsp; Not financial advice</div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────
+const API_KEY = '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';
+
 let themes = ['AI / Semiconductors', 'Defense / Drones'];
 let maxPrice = 30;
 let caps = ['micro', 'small'];
 let cat = 'all';
-
 const PORTFOLIO_TICKERS = ['VOO','NVDA','CRWD','RDW','MCHP','BBAI','RCAT','SOUN','UMAC','PDYN','ONDS'];
 const BP = 17.21;
 
-// ── Pill factory ───────────────────────────────────────────────
 const OFF = { background:'#ffffff', color:'#999999', border:'2px solid #cccccc', fontWeight:'500' };
 const ON  = { background:'#e8f5ee', color:'#1a5a30', border:'2px solid #1a7a42', fontWeight:'700' };
 
@@ -157,14 +129,13 @@ function makePill(label, val, on) {
   return b;
 }
 
-// Theme pills — multi toggle
 (function() {
   const items = [
-    ['⚡ AI / Semis',    'AI / Semiconductors',    true],
-    ['🎯 Defense',       'Defense / Drones',        true],
-    ['🧬 Longevity',     'Longevity / Biotech',     false],
-    ['📱 Consumer AI',   'Consumer AI',             false],
-    ['⛽ Energy',        'Energy / Tankers',        false],
+    ['⚡ AI / Semis','AI / Semiconductors',true],
+    ['🎯 Defense','Defense / Drones',true],
+    ['🧬 Longevity','Longevity / Biotech',false],
+    ['📱 Consumer AI','Consumer AI',false],
+    ['⛽ Energy','Energy / Tankers',false],
   ];
   const wrap = document.getElementById('theme-pills');
   items.forEach(([label, val, on]) => {
@@ -172,14 +143,13 @@ function makePill(label, val, on) {
     b.addEventListener('click', function() {
       const isOn = themes.includes(val);
       if (isOn) { themes = themes.filter(t => t !== val); stylePill(b, false); }
-      else       { themes.push(val); stylePill(b, true); }
+      else { themes.push(val); stylePill(b, true); }
       sync();
     });
     wrap.appendChild(b);
   });
 })();
 
-// Price pills — single select
 (function() {
   const items = [['$5','5'],['$10','10'],['$20','20'],['$30','30']];
   const wrap = document.getElementById('price-pills');
@@ -198,12 +168,11 @@ function makePill(label, val, on) {
   });
 })();
 
-// Cap pills — multi toggle
 (function() {
   const items = [
-    ['Micro <$300M', 'micro', true],
-    ['Small $300M–$2B', 'small', true],
-    ['Mid $2B+', 'mid', false],
+    ['Micro <$300M','micro',true],
+    ['Small $300M–$2B','small',true],
+    ['Mid $2B+','mid',false],
   ];
   const wrap = document.getElementById('cap-pills');
   items.forEach(([label, val, on]) => {
@@ -211,20 +180,19 @@ function makePill(label, val, on) {
     b.addEventListener('click', function() {
       const isOn = caps.includes(val);
       if (isOn) { caps = caps.filter(c => c !== val); stylePill(b, false); }
-      else       { caps.push(val); stylePill(b, true); }
+      else { caps.push(val); stylePill(b, true); }
       sync();
     });
     wrap.appendChild(b);
   });
 })();
 
-// Cat pills — single select
 (function() {
   const items = [
-    ['All Types', 'all', true],
-    ['Earnings',  'earnings', false],
-    ['Contracts', 'contract', false],
-    ['Volume',    'volume', false],
+    ['All Types','all',true],
+    ['Earnings','earnings',false],
+    ['Contracts','contract',false],
+    ['Volume','volume',false],
   ];
   const wrap = document.getElementById('cat-pills');
   const btns = [];
@@ -246,17 +214,12 @@ function capLabel(v) {
 }
 
 function sync() {
-  const t  = themes.length ? themes.join(', ') : '(none)';
-  const c  = caps.length   ? caps.map(capLabel).join(', ') : '(none)';
-  const cl = cat === 'all'      ? 'All catalyst types'  :
-             cat === 'earnings' ? 'Earnings within 30d' :
-             cat === 'contract' ? 'Contract wins'       : 'Volume spikes';
-  document.getElementById('sel-summary').innerHTML =
-    '<strong>Scanning:</strong> ' + t + ' &nbsp;·&nbsp; Under $' + maxPrice +
-    ' &nbsp;·&nbsp; ' + c + ' &nbsp;·&nbsp; ' + cl;
+  const t = themes.length ? themes.join(', ') : '(none)';
+  const c = caps.length ? caps.map(capLabel).join(', ') : '(none)';
+  const cl = cat === 'all' ? 'All catalyst types' : cat === 'earnings' ? 'Earnings within 30d' : cat === 'contract' ? 'Contract wins' : 'Volume spikes';
+  document.getElementById('sel-summary').innerHTML = '<strong>Scanning:</strong> ' + t + ' &nbsp;·&nbsp; Under $' + maxPrice + ' &nbsp;·&nbsp; ' + c + ' &nbsp;·&nbsp; ' + cl;
 }
 
-// ── Parse results ──────────────────────────────────────────────
 function parse(text) {
   const lines = text.split('\n').filter(Boolean);
   const stocks = []; let cur = null;
@@ -265,12 +228,7 @@ function parse(text) {
     if (m && l.length < 140) {
       if (cur) stocks.push(cur);
       const pm = l.match(/\$[\d.]+/);
-      cur = {
-        t: m[1],
-        n: l.replace(/\*?\*?[A-Z]{2,5}\*?\*?\s*[-–—:]?\s*/, '').replace(/\$[\d.]+.*/, '').trim().substring(0, 55),
-        p: pm ? pm[0] : null,
-        d: [], raw: ''
-      };
+      cur = { t: m[1], n: l.replace(/\*?\*?[A-Z]{2,5}\*?\*?\s*[-–—:]?\s*/, '').replace(/\$[\d.]+.*/, '').trim().substring(0, 55), p: pm ? pm[0] : null, d: [], raw: '' };
     } else if (cur) {
       const c = l.replace(/^[-•*]\s*/, '').trim();
       if (c) { cur.d.push(c); cur.raw += ' ' + c; }
@@ -282,104 +240,47 @@ function parse(text) {
 
 function priScore(txt) {
   let s = 0;
-  if (/\d+\s*day|this\s*week|tomorrow/i.test(txt))  s += 3;
-  if (/contract|award|order/i.test(txt))             s += 2;
-  if (/earnings/i.test(txt))                         s += 2;
-  if (/volume|spike|surge/i.test(txt))               s += 1;
-  if (/upgrade|initiat/i.test(txt))                  s += 1;
+  if (/\d+\s*day|this\s*week|tomorrow/i.test(txt)) s += 3;
+  if (/contract|award|order/i.test(txt)) s += 2;
+  if (/earnings/i.test(txt)) s += 2;
+  if (/volume|spike|surge/i.test(txt)) s += 1;
+  if (/upgrade|initiat/i.test(txt)) s += 1;
   return s;
 }
 
-// ── Screener ───────────────────────────────────────────────────
 async function runScan() {
-  if (!themes.length || !caps.length) {
-    alert('Select at least one theme and one market cap size.');
-    return;
-  }
+  if (!themes.length || !caps.length) { alert('Select at least one theme and one market cap size.'); return; }
   const btn = document.getElementById('scan-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Scanning live markets...';
   document.getElementById('scan-results').innerHTML = '';
-
-  const capStr   = caps.map(c => c === 'micro' ? 'Micro (<$300M)' : c === 'small' ? 'Small ($300M–$2B)' : 'Mid ($2B+)').join(', ');
-  const catNote  = cat === 'earnings' ? 'upcoming earnings within 30 days' :
-                   cat === 'contract' ? 'recent contract wins or orders'   :
-                   cat === 'volume'   ? 'unusual volume spikes'            : 'all catalyst types';
-  const today    = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-
-  const prompt = `You are a stock screener for an active swing trader named Travis. Find 5 specific, undiscovered stock ideas:
-
-THEMES: ${themes.join(', ')}
-PRICE: Under $${maxPrice} per share
-MARKET CAP: ${capStr}
-CATALYST FOCUS: ${catNote}
-EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX
-DO NOT SUGGEST (already owns): ${PORTFOLIO_TICKERS.join(', ')}
-BUYING POWER: $${BP.toFixed(2)}
-
-CRITICAL: Hunt for overlooked names like Trio-Tech International (TRT) — a micro-cap AMEX stock making burn-in boards for AI GPUs that almost nobody covers. Find names with real revenue, a specific near-term catalyst, and a price where $500 buys meaningful share count. NOT well-known names. NOT obvious names.
-
-Format EXACTLY as:
-TICKER - Company Name - $CurrentPrice
-• Market cap tier and exchange
-• ONE specific recent catalyst with exact date and dollar amount
-• 2-sentence thesis
-• Entry: $X–$Y | Stop: $Z | Target: $T
-• Risk: LOW / MEDIUM / HIGH
-• Earnings: [date or N/A]
-• Days to catalyst: [number]
-
-Today: ${today}`;
-
+  const capStr = caps.map(c => c === 'micro' ? 'Micro (<$300M)' : c === 'small' ? 'Small ($300M–$2B)' : 'Mid ($2B+)').join(', ');
+  const catNote = cat === 'earnings' ? 'upcoming earnings within 30 days' : cat === 'contract' ? 'recent contract wins or orders' : cat === 'volume' ? 'unusual volume spikes' : 'all catalyst types';
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const prompt = `You are a stock screener for an active swing trader named Travis. Find 5 specific, undiscovered stock ideas:\n\nTHEMES: ${themes.join(', ')}\nPRICE: Under $${maxPrice} per share\nMARKET CAP: ${capStr}\nCATALYST FOCUS: ${catNote}\nEXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX\nDO NOT SUGGEST (already owns): ${PORTFOLIO_TICKERS.join(', ')}\nBUYING POWER: $${BP.toFixed(2)}\n\nCRITICAL: Hunt for overlooked names like Trio-Tech International (TRT) — a micro-cap AMEX stock making burn-in boards for AI GPUs that almost nobody covers. Find names with real revenue, a specific near-term catalyst, and a price where $500 buys meaningful share count. NOT well-known names.\n\nFormat EXACTLY as:\nTICKER - Company Name - $CurrentPrice\n• Market cap tier and exchange\n• ONE specific recent catalyst with exact date and dollar amount\n• 2-sentence thesis\n• Entry: $X–$Y | Stop: $Z | Target: $T\n• Risk: LOW / MEDIUM / HIGH\n• Earnings: [date or N/A]\n• Days to catalyst: [number]\n\nToday: ${today}`;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
     });
-
     const data = await res.json();
     const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
     const stocks = parse(text);
-
     if (stocks.length) {
       stocks.forEach(s => s.score = priScore(s.raw));
       stocks.sort((a, b) => b.score - a.score);
-
       document.getElementById('scan-results').innerHTML = stocks.map((s, i) => {
-        const rankLabel = i === 0 ? '<span class="rpri p1">▲ Act First</span>' :
-                          i === 1 ? '<span class="rpri p2">▲ Act Soon</span>'  :
-                                    '<span class="rpri p3">◆ Watch</span>';
-        const inPort = PORTFOLIO_TICKERS.includes(s.t)
-          ? '<div style="font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px">⚠ Already in portfolio</div>' : '';
-        return `<div class="rcard" id="rc${i}" onclick="toggleCard(${i})">
-          <div class="rhead">
-            <div>
-              <span class="rticker">${s.t}</span>${s.p ? `<span class="rprice">${s.p}</span>` : ''}
-              <div class="rname">${s.n}</div>
-            </div>
-            ${rankLabel}
-          </div>
-          ${inPort}
-          <div class="rdetails" id="rd${i}" style="display:none">
-            ${s.d.map(d => `<div class="rdetail">${d}</div>`).join('')}
-          </div>
-        </div>`;
+        const rankLabel = i === 0 ? '<span class="rpri p1">▲ Act First</span>' : i === 1 ? '<span class="rpri p2">▲ Act Soon</span>' : '<span class="rpri p3">◆ Watch</span>';
+        const inPort = PORTFOLIO_TICKERS.includes(s.t) ? '<div style="font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px">⚠ Already in portfolio</div>' : '';
+        return `<div class="rcard" id="rc${i}" onclick="toggleCard(${i})"><div class="rhead"><div><span class="rticker">${s.t}</span>${s.p ? `<span class="rprice">${s.p}</span>` : ''}<div class="rname">${s.n}</div></div>${rankLabel}</div>${inPort}<div class="rdetails" id="rd${i}" style="display:none">${s.d.map(d => `<div class="rdetail">${d}</div>`).join('')}</div></div>`;
       }).join('');
     } else {
-      document.getElementById('scan-results').innerHTML =
-        `<div class="output">${text}</div>`;
+      document.getElementById('scan-results').innerHTML = `<div class="output">${text}</div>`;
     }
   } catch(e) {
-    document.getElementById('scan-results').innerHTML =
-      '<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check your connection and try again.</p>';
+    document.getElementById('scan-results').innerHTML = '<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check your connection and try again.</p>';
   }
-
   btn.disabled = false;
   btn.innerHTML = '▶ Run Scan';
 }
@@ -390,48 +291,23 @@ function toggleCard(i) {
   d.style.display = d.style.display === 'none' ? 'block' : 'none';
 }
 
-// ── Signal Check ───────────────────────────────────────────────
 async function vetTicker() {
-  const raw    = document.getElementById('vet-input').value.trim().toUpperCase();
+  const raw = document.getElementById('vet-input').value.trim().toUpperCase();
   if (!raw) return;
-  const btn    = document.getElementById('vet-btn');
-  const out    = document.getElementById('vet-out');
+  const btn = document.getElementById('vet-btn');
+  const out = document.getElementById('vet-out');
   btn.disabled = true;
   btn.textContent = '...';
   out.innerHTML = `<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Vetting ${raw}...</p>`;
-
-  const inPort  = PORTFOLIO_TICKERS.includes(raw);
+  const inPort = PORTFOLIO_TICKERS.includes(raw);
   const portCtx = inPort ? `Travis already owns ${raw}.` : `Travis does not currently own ${raw}.`;
-  const today   = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
-
-  const prompt = `Vet this stock quickly and directly for an active swing trader named Travis.
-${portCtx} His buying power is $${BP.toFixed(2)}. His current portfolio: ${PORTFOLIO_TICKERS.join(', ')}.
-
-TICKER: ${raw}
-
-Provide exactly this, in order, no fluff:
-1. What the company does (2 sentences max)
-2. Current price and market cap tier (micro/small/mid/large)
-3. Most recent specific catalyst — exact date and dollar amount if available
-4. Bull thesis (2 sentences)
-5. Biggest risk (1 sentence)
-6. Entry range | Stop loss | Price target
-7. Earnings date (or N/A)
-8. Portfolio fit — does it overlap with ${PORTFOLIO_TICKERS.join(', ')}? Sector concern?
-9. VERDICT: ACT NOW / WATCHLIST / PASS — one sentence reason only
-
-Today: ${today}`;
-
+  const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+  const prompt = `Vet this stock quickly and directly for an active swing trader named Travis.\n${portCtx} His buying power is $${BP.toFixed(2)}. His current portfolio: ${PORTFOLIO_TICKERS.join(', ')}.\n\nTICKER: ${raw}\n\n1. What the company does (2 sentences max)\n2. Current price and market cap tier\n3. Most recent specific catalyst with date/amount\n4. Bull thesis (2 sentences)\n5. Biggest risk (1 sentence)\n6. Entry range | Stop loss | Price target\n7. Earnings date (or N/A)\n8. Portfolio fit — sector overlap?\n9. VERDICT: ACT NOW / WATCHLIST / PASS — one sentence reason\n\nBe direct. Today: ${today}`;
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01', 'x-api-key': 'sk-ant-api03-q2tyg35mC_G33XEqykanZ7FDkI8e', 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify({ model: 'claude-sonnet-4-20250514', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
     });
     const data = await res.json();
     const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
@@ -439,24 +315,18 @@ Today: ${today}`;
   } catch(e) {
     out.innerHTML = '<p style="color:#c0392b;font-size:13px">Vet failed — check connection.</p>';
   }
-
   btn.disabled = false;
   btn.textContent = 'Vet It';
 }
 
-document.getElementById('vet-input').addEventListener('keydown', function(e) {
-  if (e.key === 'Enter') vetTicker();
-});
+document.getElementById('vet-input').addEventListener('keydown', function(e) { if (e.key === 'Enter') vetTicker(); });
 
 function showTab(name) {
-  document.querySelectorAll('.tab').forEach((t, i) => {
-    t.classList.toggle('active', ['screener','signal'][i] === name);
-  });
+  document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', ['screener','signal'][i] === name));
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
 }
 
-// Init
 sync();
 </script>
 </body>
