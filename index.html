@@ -259,7 +259,7 @@ async function runScan() {
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const prompt = `You are a stock screener for an active swing trader named Travis. Find 5 specific, undiscovered stock ideas:\n\nTHEMES: ${themes.join(', ')}\nPRICE: Under $${maxPrice} per share\nMARKET CAP: ${capStr}\nCATALYST FOCUS: ${catNote}\nEXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX\nDO NOT SUGGEST (already owns): ${PORTFOLIO_TICKERS.join(', ')}\nBUYING POWER: $${BP.toFixed(2)}\n\nCRITICAL: Hunt for overlooked names like Trio-Tech International (TRT) — a micro-cap AMEX stock making burn-in boards for AI GPUs that almost nobody covers. Find names with real revenue, a specific near-term catalyst, and a price where $500 buys meaningful share count. NOT well-known names.\n\nFormat EXACTLY as:\nTICKER - Company Name - $CurrentPrice\n• Market cap tier and exchange\n• ONE specific recent catalyst with exact date and dollar amount\n• 2-sentence thesis\n• Entry: $X–$Y | Stop: $Z | Target: $T\n• Risk: LOW / MEDIUM / HIGH\n• Earnings: [date or N/A]\n• Days to catalyst: [number]\n\nToday: ${today}`;
   try {
-    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev/v1/messages', {
+    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-5-20251001', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
@@ -304,7 +304,7 @@ async function vetTicker() {
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
   const prompt = `Vet this stock quickly and directly for an active swing trader named Travis.\n${portCtx} His buying power is $${BP.toFixed(2)}. His current portfolio: ${PORTFOLIO_TICKERS.join(', ')}.\n\nTICKER: ${raw}\n\n1. What the company does (2 sentences max)\n2. Current price and market cap tier\n3. Most recent specific catalyst with date/amount\n4. Bull thesis (2 sentences)\n5. Biggest risk (1 sentence)\n6. Entry range | Stop loss | Price target\n7. Earnings date (or N/A)\n8. Portfolio fit — sector overlap?\n9. VERDICT: ACT NOW / WATCHLIST / PASS — one sentence reason\n\nBe direct. Today: ${today}`;
   try {
-    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev/v1/messages', {
+    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
       body: JSON.stringify({ model: 'claude-sonnet-4-5-20251001', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
