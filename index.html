@@ -280,7 +280,9 @@ function priScore(txt) {
 }
 
 // ─── API CALL WITH RETRY ON RATE LIMIT ──────────────────────────────────────
-async function callAPI(payload, retries = 2, delayMs = 8000) {
+let lastScanFinished = 0; // timestamp when screener last completed
+
+async function callAPI(payload, retries = 3, baseDelayMs = 15000) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
       method: 'POST',
@@ -288,11 +290,26 @@ async function callAPI(payload, retries = 2, delayMs = 8000) {
       body: JSON.stringify(payload)
     });
     const data = await res.json();
-    // Rate limit: status 529 or error type overloaded/rate_limit
-    if (data.error && (data.error.type === 'overloaded_error' || data.error.type === 'rate_limit_error') && attempt < retries) {
-      document.getElementById('rate-warn').style.display = 'block';
-      await new Promise(r => setTimeout(r, delayMs));
-      continue;
+    if (data.error && (data.error.type === 'overloaded_error' || data.error.type === 'rate_limit_error')) {
+      if (attempt < retries) {
+        const wait = baseDelayMs * (attempt + 1); // 15s, 30s, 45s
+        const warnEl = document.getElementById('rate-warn');
+        warnEl.style.display = 'block';
+        // Countdown display
+        let remaining = Math.ceil(wait / 1000);
+        const tick = setInterval(() => {
+          remaining--;
+          warnEl.textContent = `⚠ Rate limit hit — retrying in ${remaining}s... (attempt ${attempt + 1}/${retries})`;
+          if (remaining <= 0) clearInterval(tick);
+        }, 1000);
+        warnEl.textContent = `⚠ Rate limit hit — retrying in ${remaining}s... (attempt ${attempt + 1}/${retries})`;
+        await new Promise(r => setTimeout(r, wait));
+        clearInterval(tick);
+        continue;
+      }
+      // All retries exhausted — return the error so caller can show it
+      document.getElementById('rate-warn').style.display = 'none';
+      return data;
     }
     document.getElementById('rate-warn').style.display = 'none';
     return data;
@@ -392,6 +409,7 @@ Today: ${today}`;
 
   btn.disabled = false;
   btn.innerHTML = '▶ Run Scan';
+  lastScanFinished = Date.now();
 }
 
 function toggleCard(i) {
@@ -409,7 +427,23 @@ async function vetTicker() {
   const out = document.getElementById('vet-out');
   btn.disabled = true;
   btn.textContent = '...';
-  out.innerHTML = `<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Vetting ${raw}...</p>`;
+
+  // If screener ran recently, wait for token bucket to refill (62s window)
+  const elapsed = Date.now() - lastScanFinished;
+  const cooldown = 62000;
+  if (lastScanFinished > 0 && elapsed < cooldown) {
+    const wait = cooldown - elapsed;
+    document.getElementById('rate-warn').style.display = 'block';
+    let remaining = Math.ceil(wait / 1000);
+    const updateMsg = () => { out.innerHTML = '<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Token cooldown &mdash; vetting ' + raw + ' in ' + remaining + 's...</p>'; };
+    updateMsg();
+    const tick = setInterval(() => { remaining--; updateMsg(); if (remaining <= 0) clearInterval(tick); }, 1000);
+    await new Promise(r => setTimeout(r, wait));
+    clearInterval(tick);
+    document.getElementById('rate-warn').style.display = 'none';
+  }
+
+  out.innerHTML = '<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Vetting ' + raw + '...</p>';
 
   const inPort = PORTFOLIO_TICKERS.includes(raw);
   const portCtx = inPort ? `Travis already owns ${raw}.` : `Travis does not own ${raw}.`;
