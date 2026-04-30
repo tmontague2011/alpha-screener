@@ -43,8 +43,31 @@
   .vet-btn:hover { background: #333; }
   .vet-btn:disabled { opacity: 0.4; cursor: not-allowed; }
   .output { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; padding: 16px; font-size: 12px; color: #444; white-space: pre-wrap; line-height: 1.8; font-family: sans-serif; }
+
+  /* Signal Check result cards */
+  .vet-card { background: #fff; border: 1px solid #e5e5e5; border-radius: 8px; overflow: hidden; }
+  .vet-card-header { padding: 14px 16px 10px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: flex-start; }
+  .vet-ticker-big { font-size: 22px; font-weight: 700; letter-spacing: 1px; }
+  .vet-price-tag { font-size: 13px; color: #1a7a42; font-weight: 700; }
+  .vet-verdict { display: inline-block; padding: 5px 12px; border-radius: 4px; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+  .verdict-act { background: #fde8e8; color: #c0392b; }
+  .verdict-watch { background: #fff8e1; color: #b7760a; }
+  .verdict-pass { background: #eee; color: #666; }
+  .vet-rows { padding: 12px 16px; }
+  .vet-row { display: flex; gap: 10px; padding: 7px 0; border-bottom: 1px solid #f5f5f5; }
+  .vet-row:last-child { border-bottom: none; }
+  .vet-row-label { font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase; color: #999; font-weight: 700; min-width: 90px; padding-top: 2px; }
+  .vet-row-val { font-size: 12px; color: #333; font-family: sans-serif; line-height: 1.6; flex: 1; }
+  .vet-levels { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 2px; }
+  .vet-level { font-size: 11px; padding: 3px 8px; border-radius: 3px; font-weight: 700; }
+  .level-entry { background: #e8f5ee; color: #1a5a30; }
+  .level-stop { background: #fde8e8; color: #c0392b; }
+  .level-target { background: #e8f0fe; color: #1a3a7a; }
+  .port-badge { font-size: 10px; color: #8a5200; padding: 3px 8px; background: #fff3e0; border-radius: 3px; display: inline-block; margin-top: 6px; }
+
   .spinner { width: 9px; height: 9px; border-radius: 50%; background: currentColor; display: inline-block; animation: pls 0.8s infinite; }
   @keyframes pls { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .rate-notice { font-size: 12px; color: #b7760a; background: #fff8e1; border: 1px solid #f0d080; border-radius: 6px; padding: 10px 14px; margin-bottom: 12px; font-family: sans-serif; line-height: 1.6; }
   .footer { text-align: center; font-size: 10px; color: #bbb; letter-spacing: 1px; text-transform: uppercase; padding: 24px 20px 32px; }
 </style>
 </head>
@@ -90,6 +113,7 @@
   <p style="font-size:13px;color:#666;margin-bottom:16px;font-family:sans-serif;line-height:1.7">
     Enter any ticker — from Dustin, the screener, news, wherever. Get a full vet: thesis, catalyst, entry, stop, target, and a verdict.
   </p>
+  <div id="rate-warn" style="display:none" class="rate-notice">⚠ Rate limit hit — waiting a few seconds before retrying automatically...</div>
   <div class="dustin-row">
     <input class="dustin-in" id="vet-input" placeholder="Enter ticker e.g. TRT" maxlength="10"/>
     <button class="vet-btn" id="vet-btn" onclick="vetTicker()">Vet It</button>
@@ -106,8 +130,7 @@ let themes = ['AI / Semiconductors', 'Defense / Drones'];
 let maxPrice = 30;
 let caps = ['micro', 'small'];
 let cat = 'all';
-const PORTFOLIO_TICKERS = ['VOO','NVDA','CRWD','RDW','MCHP','BBAI','RCAT','SOUN','UMAC','PDYN','ONDS'];
-const BP = 17.21;
+const PORTFOLIO_TICKERS = ['VOO','NVDA','CRWD','RDW','BBAI','RCAT','SOUN','UMAC','PDYN','ONDS','AEYE'];
 
 const OFF = { background:'#ffffff', color:'#999999', border:'2px solid #cccccc', fontWeight:'500' };
 const ON  = { background:'#e8f5ee', color:'#1a5a30', border:'2px solid #1a7a42', fontWeight:'700' };
@@ -220,60 +243,145 @@ function sync() {
   document.getElementById('sel-summary').innerHTML = '<strong>Scanning:</strong> ' + t + ' &nbsp;·&nbsp; Under $' + maxPrice + ' &nbsp;·&nbsp; ' + c + ' &nbsp;·&nbsp; ' + cl;
 }
 
+// ─── PARSE SCREENER RESULTS ─────────────────────────────────────────────────
+// Strict regex: ticker must be 2–5 uppercase letters, NOT a common English word
+// This prevents "MICRO", "THE", "AND", etc. from being parsed as tickers
+const SKIP_WORDS = new Set(['MICRO','SMALL','MID','CAP','THE','AND','FOR','NOT','USE','ARE','ETF','ALL','ANY','NEW','TOP','LOW','HIGH','BUY','SELL']);
+
 function parse(text) {
   const lines = text.split('\n').filter(Boolean);
   const stocks = []; let cur = null;
   for (const l of lines) {
-    const m = l.match(/\*?\*?([A-Z]{2,5})\*?\*?\s*[-–—:]/);
-    if (m && l.length < 140) {
+    const m = l.match(/^[\*\s]*([A-Z]{2,5})\*?\*?\s*[-–—:]/);
+    if (m && !SKIP_WORDS.has(m[1]) && l.length < 160) {
       if (cur) stocks.push(cur);
       const pm = l.match(/\$[\d.]+/);
-      cur = { t: m[1], n: l.replace(/\*?\*?[A-Z]{2,5}\*?\*?\s*[-–—:]?\s*/, '').replace(/\$[\d.]+.*/, '').trim().substring(0, 55), p: pm ? pm[0] : null, d: [], raw: '' };
+      const nameRaw = l.replace(/^[\*\s]*[A-Z]{2,5}\*?\*?\s*[-–—:]\s*/, '').replace(/\$[\d.]+.*/, '').trim();
+      cur = { t: m[1], n: nameRaw.substring(0, 60), p: pm ? pm[0] : null, d: [], raw: '' };
     } else if (cur) {
       const c = l.replace(/^[-•*]\s*/, '').trim();
       if (c) { cur.d.push(c); cur.raw += ' ' + c; }
     }
   }
   if (cur) stocks.push(cur);
-  return stocks.filter(s => s.t && s.t.length >= 2);
+  return stocks.filter(s => s.t && s.t.length >= 2 && !SKIP_WORDS.has(s.t));
 }
 
 function priScore(txt) {
   let s = 0;
+  // Volume anomaly gets highest weight (Dustin's primary signal)
+  if (/volume.*[2-9]x|[2-9]x.*volume|unusual volume|volume spike|volume surge/i.test(txt)) s += 4;
   if (/\d+\s*day|this\s*week|tomorrow/i.test(txt)) s += 3;
   if (/contract|award|order/i.test(txt)) s += 2;
   if (/earnings/i.test(txt)) s += 2;
-  if (/volume|spike|surge/i.test(txt)) s += 1;
+  if (/backlog|book.to.bill/i.test(txt)) s += 1;
   if (/upgrade|initiat/i.test(txt)) s += 1;
   return s;
 }
 
+// ─── API CALL WITH RETRY ON RATE LIMIT ──────────────────────────────────────
+async function callAPI(payload, retries = 2, delayMs = 8000) {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    // Rate limit: status 529 or error type overloaded/rate_limit
+    if (data.error && (data.error.type === 'overloaded_error' || data.error.type === 'rate_limit_error') && attempt < retries) {
+      document.getElementById('rate-warn').style.display = 'block';
+      await new Promise(r => setTimeout(r, delayMs));
+      continue;
+    }
+    document.getElementById('rate-warn').style.display = 'none';
+    return data;
+  }
+}
+
+// ─── SCREENER ────────────────────────────────────────────────────────────────
 async function runScan() {
   if (!themes.length || !caps.length) { alert('Select at least one theme and one market cap size.'); return; }
   const btn = document.getElementById('scan-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="spinner"></span> Scanning live markets...';
   document.getElementById('scan-results').innerHTML = '';
+
   const capStr = caps.map(c => c === 'micro' ? 'Micro (<$300M)' : c === 'small' ? 'Small ($300M–$2B)' : 'Mid ($2B+)').join(', ');
-  const catNote = cat === 'earnings' ? 'upcoming earnings within 30 days' : cat === 'contract' ? 'recent contract wins or orders' : cat === 'volume' ? 'unusual volume spikes' : 'all catalyst types';
+  const catNote = cat === 'earnings' ? 'upcoming earnings within 30 days' : cat === 'contract' ? 'recent contract wins or orders' : cat === 'volume' ? 'unusual volume spikes (2x+ 30-day avg)' : 'all catalyst types';
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const prompt = `You are a stock screener for an active swing trader named Travis. Find 5 specific, undiscovered stock ideas:\n\nTHEMES: ${themes.join(', ')}\nPRICE: Under $${maxPrice} per share\nMARKET CAP: ${capStr}\nCATALYST FOCUS: ${catNote}\nEXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX\nDO NOT SUGGEST (already owns): ${PORTFOLIO_TICKERS.join(', ')}\nBUYING POWER: $${BP.toFixed(2)}\n\nCRITICAL: Hunt for overlooked names like Trio-Tech International (TRT) — a micro-cap AMEX stock making burn-in boards for AI GPUs that almost nobody covers. Find names with real revenue, a specific near-term catalyst, and a price where $500 buys meaningful share count. NOT well-known names.\n\nFormat EXACTLY as:\nTICKER - Company Name - $CurrentPrice\n• Market cap tier and exchange\n• ONE specific recent catalyst with exact date and dollar amount\n• 2-sentence thesis\n• Entry: $X–$Y | Stop: $Z | Target: $T\n• Risk: LOW / MEDIUM / HIGH\n• Earnings: [date or N/A]\n• Days to catalyst: [number]\n\nToday: ${today}`;
+
+  const prompt = `You are a stock screener for swing trader Travis. Find 5 overlooked stocks matching these filters. Use web search to verify current prices and catalysts.
+
+THEMES: ${themes.join(', ')}
+PRICE: Under $${maxPrice}/share
+MARKET CAP: ${capStr}
+CATALYST FOCUS: ${catNote}
+EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX names
+EXCLUDE (already owns): ${PORTFOLIO_TICKERS.join(', ')}
+
+PRIORITY SIGNALS (rank by these):
+1. Volume anomaly: 2x+ 30-day average with no obvious news = institutional setup
+2. Backlog-to-market-cap ratio: high backlog relative to market cap = undervalued growth
+3. Hard catalyst within 14 days: earnings, contract award, FDA, DoD announcement
+4. Analyst initiation or upgrade in last 7 days
+
+Hunt for overlooked micro/small caps like Trio-Tech International (TRT) — AMEX, real revenue, specific catalyst, $500 buys meaningful shares.
+
+Format EACH result EXACTLY as:
+TICKER - Company Name - $CurrentPrice
+• Cap tier and exchange
+• Volume: [today's vs 30-day avg, e.g. "2.4x avg — institutional signal"]
+• Backlog-to-mkt-cap: [ratio if applicable, else N/A]
+• Catalyst: [specific event with date and dollar amount]
+• Thesis: [2 sentences]
+• Entry: $X–$Y | Stop: $Z | Target: $T
+• Risk: LOW / MEDIUM / HIGH
+• Earnings: [date or N/A]
+
+Today: ${today}`;
+
   try {
-    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
+    const data = await callAPI({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 1200,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
     });
-    const data = await res.json();
+
+    if (!data || data.error) {
+      document.getElementById('scan-results').innerHTML = `<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed: ${data?.error?.message || 'Unknown error'}. Try again in a moment.</p>`;
+      btn.disabled = false; btn.innerHTML = '▶ Run Scan'; return;
+    }
+
     const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
     const stocks = parse(text);
+
     if (stocks.length) {
       stocks.forEach(s => s.score = priScore(s.raw));
       stocks.sort((a, b) => b.score - a.score);
       document.getElementById('scan-results').innerHTML = stocks.map((s, i) => {
-        const rankLabel = i === 0 ? '<span class="rpri p1">▲ Act First</span>' : i === 1 ? '<span class="rpri p2">▲ Act Soon</span>' : '<span class="rpri p3">◆ Watch</span>';
-        const inPort = PORTFOLIO_TICKERS.includes(s.t) ? '<div style="font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px">⚠ Already in portfolio</div>' : '';
-        return `<div class="rcard" id="rc${i}" onclick="toggleCard(${i})"><div class="rhead"><div><span class="rticker">${s.t}</span>${s.p ? `<span class="rprice">${s.p}</span>` : ''}<div class="rname">${s.n}</div></div>${rankLabel}</div>${inPort}<div class="rdetails" id="rd${i}" style="display:none">${s.d.map(d => `<div class="rdetail">${d}</div>`).join('')}</div></div>`;
+        const rankLabel = i === 0
+          ? '<span class="rpri p1">▲ Act First</span>'
+          : i <= 2
+          ? '<span class="rpri p2">▲ Act Soon</span>'
+          : '<span class="rpri p3">◆ Watch</span>';
+        const inPort = PORTFOLIO_TICKERS.includes(s.t)
+          ? '<div style="font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px">⚠ Already in portfolio</div>'
+          : '';
+        return `<div class="rcard" id="rc${i}" onclick="toggleCard(${i})">
+          <div class="rhead">
+            <div>
+              <span class="rticker">${s.t}</span>${s.p ? `<span class="rprice">${s.p}</span>` : ''}
+              <div class="rname">${s.n}</div>
+            </div>
+            ${rankLabel}
+          </div>
+          ${inPort}
+          <div class="rdetails" id="rd${i}" style="display:none">
+            ${s.d.map(d => `<div class="rdetail">${d}</div>`).join('')}
+          </div>
+        </div>`;
       }).join('');
     } else {
       document.getElementById('scan-results').innerHTML = `<div class="output">${text}</div>`;
@@ -281,6 +389,7 @@ async function runScan() {
   } catch(e) {
     document.getElementById('scan-results').innerHTML = '<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check your connection and try again.</p>';
   }
+
   btn.disabled = false;
   btn.innerHTML = '▶ Run Scan';
 }
@@ -291,6 +400,8 @@ function toggleCard(i) {
   d.style.display = d.style.display === 'none' ? 'block' : 'none';
 }
 
+// ─── SIGNAL CHECK ────────────────────────────────────────────────────────────
+// Fully stateless — zero knowledge of screener results
 async function vetTicker() {
   const raw = document.getElementById('vet-input').value.trim().toUpperCase();
   if (!raw) return;
@@ -299,22 +410,108 @@ async function vetTicker() {
   btn.disabled = true;
   btn.textContent = '...';
   out.innerHTML = `<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Vetting ${raw}...</p>`;
+
   const inPort = PORTFOLIO_TICKERS.includes(raw);
-  const portCtx = inPort ? `Travis already owns ${raw}.` : `Travis does not currently own ${raw}.`;
+  const portCtx = inPort ? `Travis already owns ${raw}.` : `Travis does not own ${raw}.`;
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-  const prompt = `Vet this stock quickly and directly for an active swing trader named Travis.\n${portCtx} His buying power is $${BP.toFixed(2)}. His current portfolio: ${PORTFOLIO_TICKERS.join(', ')}.\n\nTICKER: ${raw}\n\n1. What the company does (2 sentences max)\n2. Current price and market cap tier\n3. Most recent specific catalyst with date/amount\n4. Bull thesis (2 sentences)\n5. Biggest risk (1 sentence)\n6. Entry range | Stop loss | Price target\n7. Earnings date (or N/A)\n8. Portfolio fit — sector overlap?\n9. VERDICT: ACT NOW / WATCHLIST / PASS — one sentence reason\n\nBe direct. Today: ${today}`;
+
+  // Lean prompt — structured JSON response to enable card rendering
+  const prompt = `Vet this stock for swing trader Travis. Use web search for current data. Today: ${today}.
+${portCtx} Portfolio: ${PORTFOLIO_TICKERS.join(', ')}.
+
+TICKER: ${raw}
+
+Respond ONLY with a valid JSON object, no markdown, no explanation:
+{
+  "ticker": "${raw}",
+  "name": "Company full name",
+  "price": "$X.XX",
+  "mktcap": "e.g. Micro <$300M / Small $300M-2B / Mid $2B+",
+  "what": "What the company does in 1-2 sentences.",
+  "catalyst": "Most recent specific catalyst with date and dollar amount.",
+  "bull": "Bull thesis in 2 sentences.",
+  "risk": "Biggest risk in 1 sentence.",
+  "entry": "$X–$Y",
+  "stop": "$Z",
+  "target": "$T",
+  "earnings": "Date or N/A",
+  "overlap": "Sector overlap note with Travis's portfolio.",
+  "verdict": "ACT NOW / WATCHLIST / PASS",
+  "reason": "One sentence reason for verdict.",
+  "volume": "Today's volume vs 30-day avg, e.g. 1.8x avg",
+  "backlog": "Backlog-to-market-cap ratio if applicable, else N/A"
+}`;
+
   try {
-    const res = await fetch('https://alpha-screener-proxy.tmontague2011.workers.dev', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'x-api-key': API_KEY, 'anthropic-version': '2023-06-01' },
-      body: JSON.stringify({ model: 'claude-sonnet-4-6', max_tokens: 1000, tools: [{ type: 'web_search_20250305', name: 'web_search' }], messages: [{ role: 'user', content: prompt }] })
+    const data = await callAPI({
+      model: 'claude-sonnet-4-6',
+      max_tokens: 700,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+      // Note: NO conversation history from screener — fully independent call
     });
-    const data = await res.json();
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-    out.innerHTML = `<div class="output">${text}</div>`;
+
+    if (!data || data.error) {
+      out.innerHTML = `<p style="color:#c0392b;font-size:13px">Vet failed: ${data?.error?.message || 'Unknown error'}. Wait 30s and try again.</p>`;
+      btn.disabled = false; btn.textContent = 'Vet It'; return;
+    }
+
+    const rawText = data.content.filter(b => b.type === 'text').map(b => b.text).join('');
+
+    // Try to parse as JSON for card rendering
+    let info = null;
+    try {
+      const clean = rawText.replace(/```json|```/g, '').trim();
+      // Extract JSON object even if surrounded by extra text
+      const jsonMatch = clean.match(/\{[\s\S]*\}/);
+      if (jsonMatch) info = JSON.parse(jsonMatch[0]);
+    } catch(e) { info = null; }
+
+    if (info) {
+      const verdictClass = info.verdict === 'ACT NOW' ? 'verdict-act' : info.verdict === 'WATCHLIST' ? 'verdict-watch' : 'verdict-pass';
+      out.innerHTML = `
+        <div class="vet-card">
+          <div class="vet-card-header">
+            <div>
+              <span class="vet-ticker-big">${info.ticker || raw}</span>
+              <span class="vet-price-tag" style="margin-left:10px">${info.price || ''}</span>
+              <div style="font-size:11px;color:#888;margin-top:3px;font-family:sans-serif">${info.name || ''} &nbsp;·&nbsp; ${info.mktcap || ''}</div>
+              ${inPort ? '<span class="port-badge">⚠ Already in portfolio</span>' : ''}
+            </div>
+            <span class="vet-verdict ${verdictClass}">${info.verdict || '—'}</span>
+          </div>
+          <div class="vet-rows">
+            <div class="vet-row"><div class="vet-row-label">What</div><div class="vet-row-val">${info.what || '—'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Catalyst</div><div class="vet-row-val">${info.catalyst || '—'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Volume</div><div class="vet-row-val">${info.volume || '—'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Backlog/Cap</div><div class="vet-row-val">${info.backlog || 'N/A'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Bull Case</div><div class="vet-row-val">${info.bull || '—'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Risk</div><div class="vet-row-val">${info.risk || '—'}</div></div>
+            <div class="vet-row">
+              <div class="vet-row-label">Levels</div>
+              <div class="vet-row-val">
+                <div class="vet-levels">
+                  <span class="vet-level level-entry">Entry ${info.entry || '—'}</span>
+                  <span class="vet-level level-stop">Stop ${info.stop || '—'}</span>
+                  <span class="vet-level level-target">Target ${info.target || '—'}</span>
+                </div>
+              </div>
+            </div>
+            <div class="vet-row"><div class="vet-row-label">Earnings</div><div class="vet-row-val">${info.earnings || 'N/A'}</div></div>
+            <div class="vet-row"><div class="vet-row-label">Port Fit</div><div class="vet-row-val">${info.overlap || '—'}</div></div>
+            <div class="vet-row" style="background:#fafafa;border-radius:0 0 6px 6px;margin:0 -16px -12px;padding:8px 16px">
+              <div class="vet-row-label">Reason</div><div class="vet-row-val" style="font-weight:600">${info.reason || '—'}</div>
+            </div>
+          </div>
+        </div>`;
+    } else {
+      // Fallback to plain text if JSON parse fails
+      out.innerHTML = `<div class="output">${rawText}</div>`;
+    }
   } catch(e) {
-    out.innerHTML = '<p style="color:#c0392b;font-size:13px">Vet failed — check connection.</p>';
+    out.innerHTML = '<p style="color:#c0392b;font-size:13px">Vet failed — check connection and try again.</p>';
   }
+
   btn.disabled = false;
   btn.textContent = 'Vet It';
 }
