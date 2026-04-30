@@ -246,27 +246,35 @@ function sync() {
 // ─── PARSE SCREENER RESULTS ─────────────────────────────────────────────────
 // Strict regex: ticker must be 2–5 uppercase letters, NOT a common English word
 // This prevents "MICRO", "THE", "AND", etc. from being parsed as tickers
-const SKIP_WORDS = new Set(['MICRO','SMALL','MID','CAP','THE','AND','FOR','NOT','USE','ARE','ETF','ALL','ANY','NEW','TOP','LOW','HIGH','BUY','SELL']);
+const SKIP_WORDS = new Set(['MICRO','SMALL','MID','CAP','THE','AND','FOR','NOT','USE','ARE','ETF','ALL','ANY','NEW','TOP','LOW','HIGH','BUY','SELL','IDEAS','IDEA','HERE','THIS','BEST','EACH','ONLY','ALSO','THEN','WITH','FROM','THAT','HAVE','WILL','YOUR','THEY','BEEN','THAN','MORE','SOME','WHAT','WHEN','OVER','INTO','JUST','LIKE','SUCH','MOST','BOTH','FIND','MAKE','GIVE','TAKE','LOOK','DOES','AMEX','NYSE','NOTE']);
 
 function parse(text) {
   const lines = text.split('\n').filter(Boolean);
   const stocks = []; let cur = null;
+  const seen = new Set();
   for (const l of lines) {
-    const m = l.match(/^[\*\s]*([A-Z]{2,5})\*?\*?\s*[-–—:]/);
-    if (m && !SKIP_WORDS.has(m[1]) && l.length < 160) {
+    // Strip markdown headers and numbered list prefixes before matching
+    const stripped = l.replace(/^[#\s]+/, '').replace(/^\d+\.\s*/, '').replace(/\*\*/g, '').trim();
+    const m = stripped.match(/^([A-Z]{2,5})[\s]*[-\u2013\u2014:]/);
+    if (m && !SKIP_WORDS.has(m[1]) && stripped.length < 160 && !seen.has(m[1])) {
       if (cur) stocks.push(cur);
-      const pm = l.match(/\$[\d.]+/);
-      const nameRaw = l.replace(/^[\*\s]*[A-Z]{2,5}\*?\*?\s*[-–—:]\s*/, '').replace(/\$[\d.]+.*/, '').trim();
+      seen.add(m[1]);
+      const pm = stripped.match(/\$[\d.]+/);
+      const nameRaw = stripped
+        .replace(/^[A-Z]{2,5}[\s]*[-\u2013\u2014:]\s*/, '')
+        .replace(/\$[\d.]+.*/, '')
+        .replace(/\*\*/g, '')
+        .trim();
       cur = { t: m[1], n: nameRaw.substring(0, 60), p: pm ? pm[0] : null, d: [], raw: '' };
     } else if (cur) {
-      const c = l.replace(/^[-•*]\s*/, '').trim();
-      if (c) { cur.d.push(c); cur.raw += ' ' + c; }
+      if (/^#{1,3}\s/.test(l)) continue;
+      const c = stripped.replace(/^[-\u2022*]\s*/, '').replace(/\*\*/g, '').trim();
+      if (c && c.length > 3) { cur.d.push(c); cur.raw += ' ' + c; }
     }
   }
   if (cur) stocks.push(cur);
   return stocks.filter(s => s.t && s.t.length >= 2 && !SKIP_WORDS.has(s.t));
 }
-
 function priScore(txt) {
   let s = 0;
   // Volume anomaly gets highest weight (Dustin's primary signal)
@@ -343,7 +351,14 @@ PRIORITY SIGNALS (rank by these):
 3. Hard catalyst within 14 days: earnings, contract award, FDA, DoD announcement
 4. Analyst initiation or upgrade in last 7 days
 
-Hunt for overlooked micro/small caps like Trio-Tech International (TRT) — AMEX, real revenue, specific catalyst, $500 buys meaningful shares.
+Hunt for overlooked names in the style of Trio-Tech International (TRT) — AMEX-listed, real revenue, specific catalyst, $500 buys meaningful shares. DO NOT suggest TRT itself.
+
+CRITICAL FORMAT RULES — follow exactly or results will break:
+- Do NOT use markdown headers (##, #) anywhere
+- Do NOT number the stocks (no 1. 2. 3.)
+- Do NOT add section titles or introductory text
+- Start each stock with: TICKER - Company Name - $Price (nothing before the ticker)
+- Then bullet points using the format below
 
 Format EACH result EXACTLY as:
 TICKER - Company Name - $CurrentPrice
