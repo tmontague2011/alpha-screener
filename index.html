@@ -336,7 +336,7 @@ async function runScan() {
   const catNote = cat === 'earnings' ? 'upcoming earnings within 30 days' : cat === 'contract' ? 'recent contract wins or orders' : cat === 'volume' ? 'unusual volume spikes (2x+ 30-day avg)' : 'all catalyst types';
   const today = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const prompt = `You are a stock screener for swing trader Travis. Find 5 overlooked stocks matching these filters. Use web search to verify current prices and catalysts.
+  const prompt = `You are a stock screener for swing trader Travis. Find 3 overlooked stocks matching these filters. Quality over quantity — 3 strong picks only. Use web search to verify current prices and catalysts.
 
 THEMES: ${themes.join(', ')}
 PRICE: Under $${maxPrice}/share
@@ -345,11 +345,7 @@ CATALYST FOCUS: ${catNote}
 EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — always include AMEX names
 EXCLUDE (already owns): ${PORTFOLIO_TICKERS.join(', ')}
 
-PRIORITY SIGNALS (rank by these):
-1. Volume anomaly: 2x+ 30-day average with no obvious news = institutional setup
-2. Backlog-to-market-cap ratio: high backlog relative to market cap = undervalued growth
-3. Hard catalyst within 14 days: earnings, contract award, FDA, DoD announcement
-4. Analyst initiation or upgrade in last 7 days
+RANK BY: volume anomaly (2x+ 30d avg) > hard catalyst <14 days > backlog/mkt-cap ratio > analyst upgrade
 
 Hunt for overlooked names in the style of Trio-Tech International (TRT) — AMEX-listed, real revenue, specific catalyst, $500 buys meaningful shares. DO NOT suggest TRT itself.
 
@@ -360,15 +356,15 @@ CRITICAL FORMAT RULES — follow exactly or results will break:
 - Start each stock with: TICKER - Company Name - $Price (nothing before the ticker)
 - Then bullet points using the format below
 
-Format EACH result EXACTLY as:
-TICKER - Company Name - $CurrentPrice
+Format EACH result as:
+TICKER - Company Name - $Price
 • Cap tier and exchange
-• Volume: [today's vs 30-day avg, e.g. "2.4x avg — institutional signal"]
-• Backlog-to-mkt-cap: [ratio if applicable, else N/A]
-• Catalyst: [specific event with date and dollar amount]
+• Volume: [vs 30d avg]
+• Backlog/Cap: [ratio or N/A]
+• Catalyst: [event + date]
 • Thesis: [2 sentences]
 • Entry: $X–$Y | Stop: $Z | Target: $T
-• Risk: LOW / MEDIUM / HIGH
+• Risk: LOW/MEDIUM/HIGH
 • Earnings: [date or N/A]
 
 Today: ${today}`;
@@ -382,7 +378,9 @@ Today: ${today}`;
     });
 
     if (!data || data.error) {
-      document.getElementById('scan-results').innerHTML = `<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed: ${data?.error?.message || 'Unknown error'}. Try again in a moment.</p>`;
+      const msg = data?.error?.message || 'Unknown error';
+      const isRate = data?.error?.type === 'rate_limit_error' || data?.error?.type === 'overloaded_error';
+      document.getElementById('scan-results').innerHTML = `<p style="color:#c0392b;font-size:13px;padding:12px 0">${isRate ? '⚠ Rate limit hit. Wait 60 seconds and tap Run Scan again.' : 'Scan failed: ' + msg}</p>`;
       btn.disabled = false; btn.innerHTML = '▶ Run Scan'; return;
     }
 
