@@ -312,7 +312,16 @@ function parseResults(text) {
     stocks.push({ticker, name, price: priceMatch?priceMatch[0]:null, details, score, raw: block, daysToEarnings});
   }
 
-  return stocks.filter(s=>s.ticker.length>=2).sort((a,b)=>b.score-a.score);
+  // Deduplicate — keep highest-scored instance of each ticker
+  const seen = {};
+  const deduped = [];
+  for(const s of stocks.filter(s=>s.ticker.length>=2).sort((a,b)=>b.score-a.score)){
+    if(!seen[s.ticker]){
+      seen[s.ticker] = true;
+      deduped.push(s);
+    }
+  }
+  return deduped;
 }
 
 async function runScan(){
@@ -382,6 +391,7 @@ Today: ${today}`;
     const stocks=parseResults(text);
 
     if(stocks.length>=2){
+      let actionRank = 0; // counts only non-earnings-flagged cards
       document.getElementById('scan-results').innerHTML=stocks.map((s,i)=>{
         // Earnings proximity overrides tier badge
         let tierLabel;
@@ -394,11 +404,12 @@ Today: ${today}`;
           earningsWarning = `<div class="earnings-alert">⛔ Earnings ${dayWord} — stops don't protect AH gaps. Per your rules: DO NOT ENTER. Wait for post-earnings setup.</div>`;
           cardClass = 'rcard earnings-warn';
         } else {
-          tierLabel = i===0
+          tierLabel = actionRank===0
             ? '<span class="tier-badge tier-1">▲ ACT FIRST</span>'
-            : i===1
+            : actionRank===1
             ? '<span class="tier-badge tier-2">▲ ACT SOON</span>'
             : '<span class="tier-badge tier-3">◆ WATCH</span>';
+          actionRank++;
         }
 
         const conflict=PORTFOLIO.includes(s.ticker)?'<div class="conflict">⚠ Already in portfolio</div>':'';
