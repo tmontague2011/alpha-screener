@@ -457,13 +457,80 @@ function parseResults(text) {
   return deduped;
 }
 
+// ── RENDER CARDS FROM STOCK ARRAY ────────────────────────────────────────
+function renderCards(stocks, startIndex, isLane5Batch) {
+  let actionRank = startIndex;
+  return stocks.map((s, i) => {
+    let tierLabel, cardClass, alertHtml = '';
+    const idx = startIndex + i;
+
+    if (s.disqualifiers.length > 0) {
+      tierLabel = `<span class="tier-badge tier-disq">⛔ DISQUALIFIED</span>`;
+      alertHtml = `<div class="disq-alert">⛔ <strong>Hard rules conflict:</strong> ${s.disqualifiers.join(' · ')}</div>`;
+      cardClass = 'rcard disqualified';
+    } else if (s.daysToEarnings !== null) {
+      const dayWord = s.daysToEarnings === 0 ? 'TODAY' : s.daysToEarnings === 1 ? 'TOMORROW' : `IN ${s.daysToEarnings} DAYS`;
+      tierLabel = `<span class="tier-badge tier-warn">⚠ EARNINGS ${dayWord}</span>`;
+      alertHtml = `<div class="earnings-alert">⛔ Earnings ${dayWord} — stops don't protect AH gaps. DO NOT ENTER. Wait for post-earnings setup.</div>`;
+      cardClass = 'rcard earnings-warn';
+    } else if (isLane5Batch) {
+      tierLabel = `<span class="tier-badge tier-l5">💡 LANE 5</span>`;
+      alertHtml = `<div class="lane5-flag">💡 Lane 5 — Obvious Money. No theme required. Verify all 4 criteria: imminent catalyst, entry in range, stop definable, 2:1+ risk/reward.</div>`;
+      cardClass = 'rcard lane5';
+    } else {
+      tierLabel = actionRank === 0
+        ? '<span class="tier-badge tier-1">▲ ACT FIRST</span>'
+        : actionRank === 1
+        ? '<span class="tier-badge tier-2">▲ ACT SOON</span>'
+        : '<span class="tier-badge tier-3">◆ WATCH</span>';
+      cardClass = 'rcard';
+      actionRank++;
+    }
+
+    const conflict = PORTFOLIO.includes(s.ticker)
+      ? '<div class="conflict">⚠ Already in portfolio — review before adding</div>' : '';
+    const volFlag = s.hasVolume
+      ? '<span class="vol-flag">📈 VOL SPIKE</span>' : '';
+
+    return `<div class="${cardClass}" id="rc${idx}" onclick="toggleCard(${idx}, this)">
+      <div class="rhead">
+        <div>
+          <span class="rticker">${s.ticker}</span>${s.price ? `<span class="rprice">${s.price}</span>` : ''}${volFlag}
+          <div class="rname">${s.name}</div>
+        </div>
+        ${tierLabel}
+      </div>
+      ${conflict}${alertHtml}
+      <div class="rdetails" id="rd${idx}" style="display:none">
+        ${s.details.map(d => `<div class="rdetail">${d}</div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── SHARED API CALL ───────────────────────────────────────────────────────
+async function callAPI(prompt, maxTok) {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-6',
+      max_tokens: maxTok,
+      tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+      messages: [{ role: 'user', content: prompt }]
+    })
+  });
+  const data = await res.json();
+  if (data.error) throw new Error(data.error.message);
+  return data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+}
+
 // ── RUN SCAN ──────────────────────────────────────────────────────────────
 async function runScan(){
   if (!themes.length || !caps.length) { alert('Select at least one theme and market cap.'); return; }
 
   const btn = document.getElementById('scan-btn');
   btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Scanning live markets...';
   document.getElementById('scan-results').innerHTML = '';
 
   const capStr = caps.map(c => c === 'small' ? '$150M–$2B' : '$2B+').join(', ');
@@ -475,144 +542,130 @@ async function runScan(){
 
   const lane5Active = themes.includes('Lane 5 — Obvious Money');
   const activeThemes = themes.filter(t => t !== 'Lane 5 — Obvious Money');
-  const themeCount = lane5Active ? 4 : 5;
   const themeList = activeThemes.length ? activeThemes.join(', ') : 'AI / Semiconductors, Defense / Drones';
-
   const today = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
 
-  const lane5Block = lane5Active ? `
-STRICT LANE 5 RULES — READ CAREFULLY:
-- Picks 1, 2, 3, and 4 must come from the themes listed above. Do NOT label any of them [LANE 5]. Do NOT mention Lane 5 for picks 1-4 under any circumstances.
-- Pick 5 ONLY gets the [LANE 5] label. It must be from a completely different sector than picks 1-4.
-- Pick 5 must clear all four criteria or do not include it: (1) named catalyst with exact date within 14 days, (2) current price is at or near entry — not extended, (3) specific stop level at a technical floor, (4) target is at minimum 2x the distance from entry to stop.
-- Start pick 5 with "5. [LANE 5] TICKER -" so it is clearly identified.
-- If you cannot find a qualifying Lane 5 pick, make pick 5 a WATCH-tier themed pick instead. Do not force a bad Lane 5.` : '';
-
-  const prompt = `You are a stock screener for Travis, an active swing trader with a strict rules-based framework.
-
-Find exactly 5 specific stock ideas. ${lane5Active ? `IMPORTANT: Picks 1, 2, 3, and 4 must strictly match the themes listed below — no exceptions, no Lane 5 label on these four. Pick 5 is a separate Lane 5 slot — see the Lane 5 rules at the bottom of this prompt.` : 'All 5 must match the themes below.'}
-
-THEMES FOR PICKS 1-${themeCount}: ${themeList}
-PRICE: Under $${maxPrice} per share
-MARKET CAP: ${capStr} — HARD MINIMUM $150M, do not surface anything below $150M market cap
-CATALYST FOCUS: ${catNote}
-EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX)
-DO NOT SUGGEST (already owns): ${PORTFOLIO.join(', ')}
-
-HARD DISQUALIFIERS — Do NOT surface any stock with these — applies to ALL 5 picks including Lane 5:
+  const DISQ_LIST = `HARD DISQUALIFIERS — do NOT surface any stock with:
 - Market cap under $150M
 - Clinical-stage biotech or medical device without commercialized revenue
 - Active SEC investigation or class action lawsuit
 - Going concern language in recent filings
-- Share dilution above 20% in last 90 days without revenue growth to justify it
+- Share dilution above 20% in last 90 days without revenue growth
 - Cash runway under 2 quarters at current burn rate
-- Earnings within 7 days (hard rules conflict — no entry allowed)
-- Toxic convertible notes or death spiral financing
+- Earnings within 7 days
+- Toxic convertible notes or death spiral financing`;
 
-PRIORITY RANKING for picks 1-${themeCount} — rank in this order:
-1. VOLUME ANOMALY: 2x+ 30-day average volume with no obvious news = institutional positioning
-2. HARD CATALYST within 14 days: DoD contract, FDA approval, Russell rebalancing, partnership
-3. HIGH BACKLOG-TO-MARKET-CAP: backlog close to or exceeding market cap = undervalued
-4. ANALYST INITIATION or upgrade in last 7 days
-
-Hunt for overlooked names with real revenue, specific catalysts, under target price where $500-1000 buys meaningful shares. NOT well-known mega-caps. AMEX and small-cap NYSE are priority.
-
-IMPORTANT: Start your response DIRECTLY with "1. [TICKER]" — no preamble, no intro sentences. Jump straight into the list.
-
-Format EACH stock as:
+  const FORMAT = `Format each stock as:
 [NUMBER]. TICKER - Company Name - $CurrentPrice
 • Market cap and exchange
 • Volume: [today] vs [30-day avg] — [X]x average (FLAG if 2x+)
 • Backlog-to-market-cap: [ratio or N/A]
-• ONE specific catalyst with exact date and dollar amount if known
+• ONE specific catalyst with exact date and dollar amount
 • 2-sentence thesis
 • Entry: $X–$Y | Stop: $Z | Target: $T
 • Earnings: [date] — FLAG if within 7 days as RULES CONFLICT
 • Days to catalyst: [number]
-• Hard disqualifiers present: NONE (or list any found)
-${lane5Block}
+• Hard disqualifiers present: NONE (or list any found)`;
+
+  // ── MAIN SCAN: 4 themed picks (or 5 if Lane 5 off) ──────────────────
+  const pickCount = lane5Active ? 4 : 5;
+  btn.innerHTML = `<span class="spinner"></span> Scanning ${themeList}...`;
+
+  const mainPrompt = `You are a stock screener for Travis, an active swing trader.
+
+Find exactly ${pickCount} stocks from these themes ONLY: ${themeList}
+PRICE: Under $${maxPrice} per share
+MARKET CAP: ${capStr} — HARD MINIMUM $150M
+CATALYST FOCUS: ${catNote}
+EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX)
+DO NOT SUGGEST: ${PORTFOLIO.join(', ')}
+
+${DISQ_LIST}
+
+PRIORITY RANKING:
+1. Volume 2x+ 30-day average with no obvious news
+2. Hard catalyst within 14 days with exact date
+3. High backlog-to-market-cap ratio
+4. Analyst initiation or upgrade in last 7 days
+
+Hunt for overlooked names where $500-1000 buys meaningful shares. NOT mega-caps.
+Start DIRECTLY with "1. [TICKER]" — no preamble.
+
+${FORMAT}
 
 Today: ${today}`;
 
   try {
-    const res = await fetch(API_URL, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
-        max_tokens: 1800,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        messages: [{ role: 'user', content: prompt }]
-      })
-    });
-    const data = await res.json();
+    const mainText = await callAPI(mainPrompt, 1400);
+    const mainStocks = parseResults(mainText);
+    const resultsEl = document.getElementById('scan-results');
 
-    if (data.error) {
-      document.getElementById('scan-results').innerHTML =
-        `<p style="color:#c0392b;font-size:13px;padding:12px 0">API Error: ${data.error.message}</p>`;
-      btn.disabled = false; btn.innerHTML = '▶ Run Scan';
-      return;
-    }
-
-    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
-    const stocks = parseResults(text);
-
-    if (stocks.length >= 2) {
-      let actionRank = 0;
-      document.getElementById('scan-results').innerHTML = stocks.map((s, i) => {
-        let tierLabel, cardClass, alertHtml = '';
-
-        if (s.disqualifiers.length > 0) {
-          tierLabel = `<span class="tier-badge tier-disq">⛔ DISQUALIFIED</span>`;
-          alertHtml = `<div class="disq-alert">⛔ <strong>Hard rules conflict:</strong> ${s.disqualifiers.join(' · ')}</div>`;
-          cardClass = 'rcard disqualified';
-        } else if (s.daysToEarnings !== null) {
-          const dayWord = s.daysToEarnings === 0 ? 'TODAY' : s.daysToEarnings === 1 ? 'TOMORROW' : `IN ${s.daysToEarnings} DAYS`;
-          tierLabel = `<span class="tier-badge tier-warn">⚠ EARNINGS ${dayWord}</span>`;
-          alertHtml = `<div class="earnings-alert">⛔ Earnings ${dayWord} — stops don't protect AH gaps. DO NOT ENTER. Wait for post-earnings setup.</div>`;
-          cardClass = 'rcard earnings-warn';
-        } else if (s.lane5) {
-          tierLabel = `<span class="tier-badge tier-l5">💡 LANE 5</span>`;
-          alertHtml = `<div class="lane5-flag">💡 Lane 5 — Obvious Money flag. No theme required. Verify all 4 criteria: imminent catalyst, entry in range, stop definable, 2:1+ risk/reward.</div>`;
-          cardClass = actionRank === 0 ? 'rcard lane5 open' : 'rcard lane5';
-          actionRank++;
-        } else {
-          tierLabel = actionRank === 0
-            ? '<span class="tier-badge tier-1">▲ ACT FIRST</span>'
-            : actionRank === 1
-            ? '<span class="tier-badge tier-2">▲ ACT SOON</span>'
-            : '<span class="tier-badge tier-3">◆ WATCH</span>';
-          cardClass = 'rcard';
-          actionRank++;
-        }
-
-        const conflict = PORTFOLIO.includes(s.ticker)
-          ? '<div class="conflict">⚠ Already in portfolio — review before adding</div>' : '';
-        const volFlag = s.hasVolume
-          ? '<span class="vol-flag">📈 VOL SPIKE</span>' : '';
-
-        return `<div class="${cardClass}" id="rc${i}" onclick="toggleCard(${i}, this)">
-          <div class="rhead">
-            <div>
-              <span class="rticker">${s.ticker}</span>${s.price ? `<span class="rprice">${s.price}</span>` : ''}${volFlag}
-              <div class="rname">${s.name}</div>
-            </div>
-            ${tierLabel}
-          </div>
-          ${conflict}${alertHtml}
-          <div class="rdetails" id="rd${i}" style="display:none">
-            ${s.details.map(d => `<div class="rdetail">${d}</div>`).join('')}
-          </div>
-        </div>`;
-      }).join('');
+    if (mainStocks.length >= 1) {
+      resultsEl.innerHTML = renderCards(mainStocks, 0, false);
     } else {
-      document.getElementById('scan-results').innerHTML =
-        `<div class="output">${stripPreamble(text)}</div>`;
+      resultsEl.innerHTML = `<div class="output">${stripPreamble(mainText)}</div>`;
     }
+
+    // ── LANE 5 SCAN: completely separate call, 1 pick any sector ──────
+    if (lane5Active) {
+      btn.innerHTML = `<span class="spinner"></span> Hunting Lane 5 Obvious Money...`;
+
+      // Divider between main and Lane 5
+      resultsEl.insertAdjacentHTML('beforeend', `
+        <div style="display:flex;align-items:center;gap:10px;margin:16px 0 12px">
+          <div style="flex:1;height:1px;background:#e5e5e5"></div>
+          <div style="font-size:10px;letter-spacing:2px;color:#7b2ff7;font-weight:700;text-transform:uppercase">💡 Lane 5 — Obvious Money</div>
+          <div style="flex:1;height:1px;background:#e5e5e5"></div>
+        </div>`);
+
+      const lane5Prompt = `You are finding ONE stock for Travis, a disciplined swing trader. This is a Lane 5 — Obvious Money pick. It can be from ANY sector with no theme requirement.
+
+It MUST clear all four criteria — if it fails any one of them, do not return it:
+1. CATALYST: Named event with an exact date within 14 days and a specific dollar amount or outcome
+2. ENTRY: Current price is at or near a logical entry — not extended from recent move
+3. STOP: A specific technical stop level is clearly definable below current price
+4. RISK/REWARD: Target is at minimum 2x the distance from entry to stop
+
+DO NOT SUGGEST: ${PORTFOLIO.join(', ')}
+PRICE: Under $${maxPrice} per share
+MARKET CAP: Minimum $150M — hard floor, no exceptions
+
+${DISQ_LIST}
+
+Return exactly ONE stock. Start with "1. TICKER -"
+${FORMAT}
+
+If you cannot find a stock that genuinely clears all four criteria, return exactly this text and nothing else:
+NO LANE 5 PICK — no qualifying setup found today.
+
+Today: ${today}`;
+
+      try {
+        const l5Text = await callAPI(lane5Prompt, 600);
+
+        if (/NO LANE 5 PICK/i.test(l5Text)) {
+          resultsEl.insertAdjacentHTML('beforeend',
+            `<div style="font-size:12px;color:#888;font-family:sans-serif;padding:10px 14px;background:#faf7ff;border:1px solid #e5e5e5;border-radius:8px;text-align:center">No qualifying Lane 5 setup found today — criteria not met.</div>`);
+        } else {
+          const l5Stocks = parseResults(l5Text);
+          if (l5Stocks.length >= 1) {
+            resultsEl.insertAdjacentHTML('beforeend', renderCards(l5Stocks, mainStocks.length, true));
+          } else {
+            resultsEl.insertAdjacentHTML('beforeend',
+              `<div class="output" style="font-size:12px">${stripPreamble(l5Text)}</div>`);
+          }
+        }
+      } catch(e) {
+        resultsEl.insertAdjacentHTML('beforeend',
+          `<p style="color:#888;font-size:12px;padding:8px 0">Lane 5 scan failed — main results above are valid.</p>`);
+      }
+    }
+
   } catch(e) {
     document.getElementById('scan-results').innerHTML =
-      '<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check connection and try again.</p>';
+      `<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed: ${e.message}</p>`;
   }
+
   btn.disabled = false; btn.innerHTML = '▶ Run Scan';
 }
 
