@@ -481,18 +481,16 @@ async function runScan(){
   const today = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
 
   const lane5Block = lane5Active ? `
-PICK #5 — LANE 5 OBVIOUS MONEY (mandatory):
-Your 5th pick must be from ANY sector with NO theme requirement. It must clear all four criteria:
-1. Catalyst is undeniable and imminent (within 14 days) — name the exact date and event
-2. Entry is in range right now — not a chase from recent highs
-3. Stop loss level is clearly definable at a technical level
-4. Risk/reward is asymmetric at minimum 2:1 by conservative math
-Start this entry with [LANE 5] so it is clearly identified.
-Do NOT apply Lane 5 to picks 1-4. Only pick 5 gets this label.` : '';
+STRICT LANE 5 RULES — READ CAREFULLY:
+- Picks 1, 2, 3, and 4 must come from the themes listed above. Do NOT label any of them [LANE 5]. Do NOT mention Lane 5 for picks 1-4 under any circumstances.
+- Pick 5 ONLY gets the [LANE 5] label. It must be from a completely different sector than picks 1-4.
+- Pick 5 must clear all four criteria or do not include it: (1) named catalyst with exact date within 14 days, (2) current price is at or near entry — not extended, (3) specific stop level at a technical floor, (4) target is at minimum 2x the distance from entry to stop.
+- Start pick 5 with "5. [LANE 5] TICKER -" so it is clearly identified.
+- If you cannot find a qualifying Lane 5 pick, make pick 5 a WATCH-tier themed pick instead. Do not force a bad Lane 5.` : '';
 
   const prompt = `You are a stock screener for Travis, an active swing trader with a strict rules-based framework.
 
-Find exactly 5 specific stock ideas. ${lane5Active ? `Picks 1-4 must match the themes below. Pick 5 is a Lane 5 Obvious Money pick from any sector — see instructions at the bottom.` : 'All 5 must match the themes below.'}
+Find exactly 5 specific stock ideas. ${lane5Active ? `IMPORTANT: Picks 1, 2, 3, and 4 must strictly match the themes listed below — no exceptions, no Lane 5 label on these four. Pick 5 is a separate Lane 5 slot — see the Lane 5 rules at the bottom of this prompt.` : 'All 5 must match the themes below.'}
 
 THEMES FOR PICKS 1-${themeCount}: ${themeList}
 PRICE: Under $${maxPrice} per share
