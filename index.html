@@ -10,6 +10,7 @@
   header{background:#111;color:#fff;padding:16px 20px}
   header .sub{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#888;margin-bottom:4px}
   header h1{font-size:18px;font-weight:700;letter-spacing:-0.5px}
+  header .version{font-size:9px;color:#555;letter-spacing:2px;text-transform:uppercase;margin-top:3px}
   .tabs{display:flex;background:#fff;border-bottom:1px solid #e5e5e5}
   .tab{flex:1;padding:12px 8px;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;border:none;background:transparent;color:#888;border-bottom:3px solid transparent;font-family:inherit}
   .tab.active{color:#111;border-bottom-color:#111}
@@ -23,33 +24,73 @@
   .summary{font-size:11px;color:#555;padding:10px 14px;background:#fff;border-radius:6px;border:1px solid #e5e5e5;margin-bottom:16px;line-height:1.7;font-family:sans-serif}
   .scan-btn{width:100%;padding:14px;border:2px solid #111;background:#111;color:#fff;cursor:pointer;font-size:12px;letter-spacing:3px;text-transform:uppercase;font-family:inherit;border-radius:6px;margin-bottom:20px;display:flex;align-items:center;justify-content:center;gap:8px}
   .scan-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+  /* Result cards */
   .rcard{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:14px 16px;margin-bottom:10px;cursor:pointer}
   .rcard.open{border-color:#1a7a42;background:#f9fdf9}
-  .rcard.earnings-warn{border-color:#c0392b;background:#fff8f8}
+  .rcard.earnings-warn{border-color:#c0392b;background:#fff8f8;cursor:default}
+  .rcard.disqualified{border-color:#888;background:#f5f5f5;opacity:0.7;cursor:default}
+  .rcard.lane5{border-color:#7b2ff7;background:#faf7ff}
+  .rcard.lane5.open{border-color:#7b2ff7;background:#f4f0ff}
   .rhead{display:flex;justify-content:space-between;align-items:flex-start}
   .rticker{font-size:16px;font-weight:700;letter-spacing:1px}
   .rprice{font-size:12px;color:#1a7a42;font-weight:600;margin-left:8px}
   .rname{font-size:11px;color:#888;margin-top:3px;font-family:sans-serif}
-  .rpri{font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:700;white-space:nowrap}
-  .p1{color:#c0392b}.p2{color:#b7760a}.p3{color:#1a7a42}
   .rdetails{margin-top:12px;padding-top:12px;border-top:1px solid #eee}
   .rdetail{font-size:12px;color:#444;padding:4px 0 4px 12px;border-left:2px solid #e5e5e5;margin-bottom:5px;line-height:1.6;font-family:sans-serif}
-  .conflict{font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px}
+
+  /* Badges */
+  .tier-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;margin-right:4px;white-space:nowrap}
+  .tier-1{background:#fdecea;color:#c0392b}
+  .tier-2{background:#fff3e0;color:#b7760a}
+  .tier-3{background:#e8f5ee;color:#1a7a42}
+  .tier-warn{background:#fdecea;color:#c0392b;border:1px solid #c0392b}
+  .tier-disq{background:#e5e5e5;color:#666;border:1px solid #ccc}
+  .tier-l5{background:#ede7ff;color:#7b2ff7;border:1px solid #c4b5fd}
+
+  /* Alerts inside cards */
+  .conflict{font-size:10px;color:#8a5200;margin-top:6px;padding:4px 8px;background:#fff3e0;border-radius:3px;font-family:sans-serif}
   .earnings-alert{font-size:11px;color:#c0392b;font-weight:700;margin-top:6px;padding:6px 10px;background:#fdecea;border-radius:4px;border-left:3px solid #c0392b;font-family:sans-serif}
+  .disq-alert{font-size:11px;color:#555;margin-top:6px;padding:6px 10px;background:#efefef;border-radius:4px;border-left:3px solid #999;font-family:sans-serif}
+  .lane5-flag{font-size:11px;color:#7b2ff7;font-weight:700;margin-top:6px;padding:6px 10px;background:#ede7ff;border-radius:4px;border-left:3px solid #7b2ff7;font-family:sans-serif}
+  .vol-flag{font-size:10px;color:#c0392b;margin-left:6px;font-weight:700}
+
+  /* Signal check / vet tab */
   .dustin-row{display:flex;gap:8px;margin-bottom:16px}
   .dustin-in{flex:1;padding:11px 14px;border:1px solid #ccc;border-radius:6px;background:#fff;color:#111;font-size:14px;font-family:inherit;text-transform:uppercase}
   .dustin-in::placeholder{color:#aaa;text-transform:none;font-size:13px}
   .vet-btn{padding:11px 18px;border:2px solid #111;border-radius:6px;background:#111;color:#fff;cursor:pointer;font-size:12px;font-family:inherit;white-space:nowrap}
   .vet-btn:disabled{opacity:0.4;cursor:not-allowed}
+
+  /* Vet output structured card */
+  .vet-card{background:#fff;border:1px solid #e5e5e5;border-radius:8px;overflow:hidden;margin-top:4px}
+  .vet-header{background:#111;color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:center}
+  .vet-ticker-big{font-size:20px;font-weight:700;letter-spacing:2px}
+  .vet-verdict{font-size:11px;font-weight:700;padding:4px 10px;border-radius:4px;letter-spacing:1px}
+  .verdict-buy{background:#1a7a42;color:#fff}
+  .verdict-watch{background:#b7760a;color:#fff}
+  .verdict-pass{background:#c0392b;color:#fff}
+  .verdict-disq{background:#555;color:#fff}
+  .vet-body{padding:0}
+  .vet-row{display:flex;border-bottom:1px solid #f0f0f0;font-size:12px;font-family:sans-serif}
+  .vet-row:last-child{border-bottom:none}
+  .vet-label{width:140px;min-width:140px;padding:10px 12px;background:#f7f7f5;color:#888;font-weight:600;font-size:10px;letter-spacing:1px;text-transform:uppercase;border-right:1px solid #f0f0f0}
+  .vet-val{padding:10px 12px;color:#333;flex:1;line-height:1.6}
+  .vet-val.flag{color:#c0392b;font-weight:600}
+  .vet-val.good{color:#1a7a42;font-weight:600}
+  .vet-val.warn{color:#b7760a;font-weight:600}
+  .vet-val.disq-val{color:#c0392b;font-weight:700;background:#fff8f8}
+  .vet-disq-banner{background:#fdecea;border-left:4px solid #c0392b;padding:12px 16px;font-size:12px;color:#c0392b;font-weight:700;font-family:sans-serif}
+  .vet-l5-banner{background:#ede7ff;border-left:4px solid #7b2ff7;padding:12px 16px;font-size:12px;color:#7b2ff7;font-weight:700;font-family:sans-serif}
   .output{background:#fff;border:1px solid #e5e5e5;border-radius:8px;padding:16px;font-size:12px;color:#444;white-space:pre-wrap;line-height:1.8;font-family:sans-serif}
+
   .spinner{width:9px;height:9px;border-radius:50%;background:currentColor;display:inline-block;animation:pls 0.8s infinite}
   @keyframes pls{0%,100%{opacity:1}50%{opacity:0.2}}
-  .footer{text-align:center;font-size:10px;color:#bbb;letter-spacing:1px;text-transform:uppercase;padding:24px 20px 32px}
-  .tier-badge{display:inline-block;padding:2px 8px;border-radius:3px;font-size:10px;font-weight:700;margin-right:8px}
-  .tier-1{background:#fdecea;color:#c0392b}
-  .tier-2{background:#fff3e0;color:#b7760a}
-  .tier-3{background:#e8f5ee;color:#1a7a42}
-  .tier-warn{background:#fdecea;color:#c0392b;border:1px solid #c0392b}
+  .footer{text-align:center;font-size:10px;color:#bbb;letter-spacing:1px;text-transform:uppercase;padding:24px 20px 32px;line-height:2}
+
+  /* Rules reminder banner */
+  .rules-banner{background:#f0f4ff;border:1px solid #c7d7f9;border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:11px;color:#3a4a8a;font-family:sans-serif;line-height:1.7}
+  .rules-banner strong{color:#1a2a6a}
 </style>
 </head>
 <body>
@@ -57,6 +98,7 @@
 <header>
   <div class="sub">Travis Montague</div>
   <h1>Alpha Screener</h1>
+  <div class="version">v2.0 · June 2026 · Three-AI Framework</div>
 </header>
 
 <div class="tabs">
@@ -64,7 +106,13 @@
   <button class="tab" onclick="showTab('signal')">Signal Check</button>
 </div>
 
+<!-- ═══════════════════════════════════════════════════ SCREENER TAB -->
 <div id="tab-screener" class="panel active">
+
+  <div class="rules-banner">
+    <strong>Active Rules:</strong> $150M+ market cap floor · Max 6 satellites · 7-day earnings = hard disqualify · Limit orders only · Stop on every position · Exit before earnings
+  </div>
+
   <div class="grid2">
     <div class="section">
       <div class="ctrl-label">Themes</div>
@@ -77,56 +125,98 @@
   </div>
   <div class="grid2">
     <div class="section">
-      <div class="ctrl-label">Market Cap</div>
+      <div class="ctrl-label">Market Cap (min $150M)</div>
       <div class="pills" id="cap-pills"></div>
     </div>
     <div class="section">
-      <div class="ctrl-label">Catalyst</div>
+      <div class="ctrl-label">Catalyst Type</div>
       <div class="pills" id="cat-pills"></div>
     </div>
   </div>
+
   <div class="summary" id="sel-summary"></div>
   <button class="scan-btn" id="scan-btn" onclick="runScan()">▶ Run Scan</button>
   <div id="scan-results"></div>
 </div>
 
+<!-- ═══════════════════════════════════════════════════ SIGNAL CHECK TAB -->
 <div id="tab-signal" class="panel">
-  <p style="font-size:13px;color:#666;margin-bottom:16px;font-family:sans-serif;line-height:1.7">Enter any ticker — from Dustin, the screener, news, or your own research. Full vet: thesis, catalyst, entry, stop, target, portfolio fit, and a verdict.</p>
+  <p style="font-size:13px;color:#666;margin-bottom:12px;font-family:sans-serif;line-height:1.7">
+    Enter any ticker — from Dustin, screener, news, or your own research. Full framework vet: thesis, catalyst, entry, stop, target, rules check, and a three-AI ready verdict.
+  </p>
+  <div class="rules-banner">
+    <strong>Auto-disqualifiers checked:</strong> Clinical stage without revenue · Active SEC/class action · Going concern · Dilution >20% in 90 days · Cash runway &lt;2 quarters · Earnings within 7 days · Market cap &lt;$150M
+  </div>
   <div class="dustin-row">
-    <input class="dustin-in" id="vet-input" placeholder="Enter ticker e.g. TRT, AXTI..." maxlength="10"/>
+    <input class="dustin-in" id="vet-input" placeholder="Enter ticker e.g. GSIT, QUBT, HIMS..." maxlength="10"/>
     <button class="vet-btn" id="vet-btn" onclick="vetTicker()">Vet It</button>
   </div>
   <div id="vet-out"></div>
 </div>
 
-<div class="footer">Cross-check with Grok + Gemini before executing &nbsp;·&nbsp; Not financial advice</div>
+<div class="footer">
+  Cross-check with Grok + Gemini before executing &nbsp;·&nbsp; Not financial advice<br>
+  Grok = momentum · Gemini = solvency · Claude = synthesis
+</div>
 
 <script>
 const API_URL = 'https://alpha-screener-proxy.tmontague2011.workers.dev';
 
-const PORTFOLIO = ['VOO','NVDA','CRWD','BBAI','SOUN','AEYE','RCAT','UMAC','SKYX'];
+// ── CURRENT PORTFOLIO (update when positions change) ──────────────────────
+const PORTFOLIO = ['VOO','NVDA','CRWD','BBAI','LTRX','PDYN','ATOM','POET','GSIT'];
 
-// Non-ticker words that might be falsely parsed
-const SKIP_WORDS = ['THE','AND','FOR','NOT','ACT','NEW','ADD','BUY','SEC','FDA','ETF',
+// ── WORDS THAT LOOK LIKE TICKERS BUT AREN'T ──────────────────────────────
+const SKIP_WORDS = [
+  'THE','AND','FOR','NOT','ACT','NEW','ADD','BUY','SEC','FDA','ETF',
   'CEO','CFO','IPO','OTC','USD','YOY','AH','DOD','RFK','MDA','MOD','NATO',
   'MICRO','SMALL','LARGE','MID','CAP','NYSE','AMEX','LOW','HIGH','RISK','STOP',
-  'HOLD','SELL','WATCH','PASS','NOW','NEXT','NOTE','LAST','DAYS','WEEK','YEAR'];
+  'HOLD','SELL','WATCH','PASS','NOW','NEXT','NOTE','LAST','DAYS','WEEK','YEAR',
+  'LANE','TAM','SBC','EPS','ARR','ATH','ATL','RSI','MACD','EBITDA','FCF',
+  'TTM','QOQ','MOE','LOI','MOU','NDC','TAA','UAS','UAV','DOW','DOE'
+];
 
+// ── HARD DISQUALIFIER KEYWORDS TO DETECT IN AI OUTPUT ────────────────────
+const DISQ_PATTERNS = [
+  /clinical.?stage/i,
+  /going.?concern/i,
+  /class.?action/i,
+  /sec.?invest/i,
+  /toxic.?convert/i,
+  /death.?spiral/i,
+  /working.?capital.?offering/i,
+  /market.?cap[^$\d]*under.*\$150/i,
+  /cash.?runway.*(under|less than|below).*(2|two|1|one).?quarter/i,
+  /dilut\w+.*(20%|25%|30%|40%|50%)/i,
+];
+
+// ── LANE 5 DETECTION ──────────────────────────────────────────────────────
+const LANE5_PATTERNS = [
+  /lane.?5/i,
+  /obvious.?money/i,
+  /outside.*(lane|theme|sector)/i,
+  /non.?ai/i,
+  /off.?theme/i,
+  /proactive.?flag/i,
+];
+
+// ── PILL STATE ────────────────────────────────────────────────────────────
 let themes = ['AI / Semiconductors', 'Defense / Drones'];
 let maxPrice = 30;
-let caps = ['micro', 'small'];
+let caps = ['small','mid'];
 let cat = 'all';
 
 const OFF = {background:'#ffffff',color:'#999999',border:'2px solid #cccccc',fontWeight:'500'};
 const ON  = {background:'#e8f5ee',color:'#1a5a30',border:'2px solid #1a7a42',fontWeight:'700'};
+const ON5 = {background:'#ede7ff',color:'#5b21b6',border:'2px solid #7b2ff7',fontWeight:'700'};
 
-function stylePill(el, on) {
-  const s = on ? ON : OFF;
+function stylePill(el, on, lane5) {
+  const s = lane5 ? ON5 : on ? ON : OFF;
   el.style.background = s.background;
   el.style.color = s.color;
   el.style.border = s.border;
   el.style.fontWeight = s.fontWeight;
 }
+
 function makePill(label, val, on) {
   const b = document.createElement('button');
   b.className = 'pill';
@@ -139,19 +229,21 @@ function makePill(label, val, on) {
 // Theme pills — multi toggle
 (function(){
   const items = [
-    ['⚡ AI/Semis','AI / Semiconductors',true],
-    ['🎯 Defense','Defense / Drones',true],
-    ['🧬 Longevity','Longevity / Biotech',false],
-    ['📱 Consumer AI','Consumer AI',false],
-    ['⛽ Energy','Energy / Tankers',false],
+    ['⚡ AI/Semis',    'AI / Semiconductors', true],
+    ['🎯 Defense',     'Defense / Drones',    true],
+    ['🧬 Longevity',   'Longevity / Health',  false],
+    ['📱 Consumer AI', 'Consumer AI',         false],
+    ['⚡ Energy',      'Energy',              false],
+    ['💡 Lane 5',      'Lane 5 — Obvious Money', false],
   ];
   const wrap = document.getElementById('theme-pills');
-  items.forEach(([label,val,on])=>{
-    const b = makePill(label,val,on);
-    b.addEventListener('click',function(){
+  items.forEach(([label, val, on]) => {
+    const b = makePill(label, val, on);
+    const isL5 = val === 'Lane 5 — Obvious Money';
+    b.addEventListener('click', function(){
       const isOn = themes.includes(val);
-      if(isOn){themes=themes.filter(t=>t!==val);stylePill(b,false);}
-      else{themes.push(val);stylePill(b,true);}
+      if(isOn){ themes = themes.filter(t => t !== val); stylePill(b, false, false); }
+      else { themes.push(val); stylePill(b, true, isL5); }
       sync();
     });
     wrap.appendChild(b);
@@ -160,16 +252,16 @@ function makePill(label, val, on) {
 
 // Price pills — single select
 (function(){
-  const items=[['$5','5'],['$10','10'],['$20','20'],['$30','30']];
-  const wrap=document.getElementById('price-pills');
-  const btns=[];
-  items.forEach(([label,val])=>{
-    const on=val==='30';
-    const b=makePill(label,val,on);
-    b.addEventListener('click',function(){
-      maxPrice=parseInt(val);
-      btns.forEach(x=>stylePill(x,false));
-      stylePill(b,true);
+  const items = [['$5','5'],['$10','10'],['$20','20'],['$30','30'],['$50','50']];
+  const wrap = document.getElementById('price-pills');
+  const btns = [];
+  items.forEach(([label, val]) => {
+    const on = val === '30';
+    const b = makePill(label, val, on);
+    b.addEventListener('click', function(){
+      maxPrice = parseInt(val);
+      btns.forEach(x => stylePill(x, false));
+      stylePill(b, true);
       sync();
     });
     wrap.appendChild(b);
@@ -177,33 +269,42 @@ function makePill(label, val, on) {
   });
 })();
 
-// Cap pills — multi toggle
+// Cap pills — multi toggle (minimum $150M enforced in prompt)
 (function(){
-  const items=[['Micro <$300M','micro',true],['Small $300M–$2B','small',true],['Mid $2B+','mid',false]];
-  const wrap=document.getElementById('cap-pills');
-  items.forEach(([label,val,on])=>{
-    const b=makePill(label,val,on);
-    b.addEventListener('click',function(){
-      const isOn=caps.includes(val);
-      if(isOn){caps=caps.filter(c=>c!==val);stylePill(b,false);}
-      else{caps.push(val);stylePill(b,true);}
+  const items = [
+    ['$150M–$2B', 'small', true],
+    ['$2B+',      'mid',   true],
+  ];
+  const wrap = document.getElementById('cap-pills');
+  items.forEach(([label, val, on]) => {
+    const b = makePill(label, val, on);
+    b.addEventListener('click', function(){
+      const isOn = caps.includes(val);
+      if(isOn){ caps = caps.filter(c => c !== val); stylePill(b, false); }
+      else { caps.push(val); stylePill(b, true); }
       sync();
     });
     wrap.appendChild(b);
   });
 })();
 
-// Cat pills — single select
+// Catalyst pills — single select
 (function(){
-  const items=[['All Types','all',true],['Earnings','earnings',false],['Contracts','contract',false],['Volume','volume',false]];
-  const wrap=document.getElementById('cat-pills');
-  const btns=[];
-  items.forEach(([label,val,on])=>{
-    const b=makePill(label,val,on);
-    b.addEventListener('click',function(){
-      cat=val;
-      btns.forEach(x=>stylePill(x,false));
-      stylePill(b,true);
+  const items = [
+    ['All Types',  'all',      true],
+    ['Earnings',   'earnings', false],
+    ['Contracts',  'contract', false],
+    ['Volume',     'volume',   false],
+    ['Catalyst',   'catalyst', false],
+  ];
+  const wrap = document.getElementById('cat-pills');
+  const btns = [];
+  items.forEach(([label, val, on]) => {
+    const b = makePill(label, val, on);
+    b.addEventListener('click', function(){
+      cat = val;
+      btns.forEach(x => stylePill(x, false));
+      stylePill(b, true);
       sync();
     });
     wrap.appendChild(b);
@@ -211,18 +312,26 @@ function makePill(label, val, on) {
   });
 })();
 
-function capLabel(v){return v==='micro'?'Micro <$300M':v==='small'?'Small $300M–$2B':'Mid $2B+';}
+function capLabel(v){ return v === 'small' ? '$150M–$2B' : '$2B+'; }
+
 function sync(){
-  const t=themes.length?themes.join(', '):'(none)';
-  const c=caps.length?caps.map(capLabel).join(', '):'(none)';
-  const cl=cat==='all'?'All catalyst types':cat==='earnings'?'Earnings within 30d':cat==='contract'?'Contract wins':'Volume spikes';
-  document.getElementById('sel-summary').innerHTML='<strong>Scanning:</strong> '+t+' &nbsp;·&nbsp; Under $'+maxPrice+' &nbsp;·&nbsp; '+c+' &nbsp;·&nbsp; '+cl;
+  const t = themes.length ? themes.join(', ') : '(none selected)';
+  const c = caps.length ? caps.map(capLabel).join(', ') : '(none selected)';
+  const cl = cat === 'all' ? 'All catalyst types'
+    : cat === 'earnings' ? 'Earnings within 30 days'
+    : cat === 'contract' ? 'Contract wins'
+    : cat === 'volume'   ? 'Volume spikes (2x+)'
+    : 'Imminent catalyst';
+  document.getElementById('sel-summary').innerHTML =
+    '<strong>Scanning:</strong> ' + t +
+    ' &nbsp;·&nbsp; Under $' + maxPrice +
+    ' &nbsp;·&nbsp; Market cap ' + c +
+    ' (min $150M floor)' +
+    ' &nbsp;·&nbsp; ' + cl;
 }
 
-// ─── FIX 1: Strip model preamble ───────────────────────────────────────────
-// Find where the actual numbered results start and cut everything before it.
+// ── STRIP MODEL PREAMBLE ──────────────────────────────────────────────────
 function stripPreamble(text) {
-  // Look for the first line that starts with "1." followed by a ticker pattern
   const match = text.match(/(?:^|\n)(1\.\s+\*?\*?[A-Z]{2,6})/);
   if (match) {
     const idx = text.indexOf(match[1]);
@@ -231,27 +340,19 @@ function stripPreamble(text) {
   return text;
 }
 
-// ─── FIX 2: Earnings proximity detection ───────────────────────────────────
-// Returns days until earnings if within 14 days, otherwise null.
+// ── EARNINGS PROXIMITY ────────────────────────────────────────────────────
 function earningsProximity(raw) {
-  // Match patterns like "Earnings: May 14", "Earnings: May 20", "May 14, 2026"
-  // and check if they fall within 7 days of today
   const today = new Date();
   today.setHours(0,0,0,0);
-
-  // Try to extract an earnings date string from the block
   const patterns = [
     /earnings[:\s]+([A-Z][a-z]+ \d{1,2},?\s*\d{0,4})/i,
     /earnings date[:\s]+([A-Z][a-z]+ \d{1,2},?\s*\d{0,4})/i,
     /reports?[:\s]+([A-Z][a-z]+ \d{1,2},?\s*\d{0,4})/i,
-    /\bQ[1-4] \d{4} earnings[^\n]*?([A-Z][a-z]+ \d{1,2})/i,
   ];
-
   for (const pat of patterns) {
     const m = raw.match(pat);
     if (m) {
       const dateStr = m[1].trim();
-      // Add current year if missing
       const withYear = /\d{4}/.test(dateStr) ? dateStr : dateStr + ', 2026';
       const parsed = new Date(withYear);
       if (!isNaN(parsed)) {
@@ -261,62 +362,93 @@ function earningsProximity(raw) {
       }
     }
   }
-
-  // Also catch "Days to catalyst: N" where N <= 7 AND earnings is mentioned
   const daysMatch = raw.match(/days to catalyst[:\s]+(\d+)/i);
   if (daysMatch) {
     const d = parseInt(daysMatch[1]);
     if (d <= 7 && /earnings/i.test(raw)) return d;
   }
-
   return null;
 }
 
-// ─── Parse results into structured cards ───────────────────────────────────
-function parseResults(text) {
-  // Strip preamble first
-  const clean = stripPreamble(text);
+// ── HARD DISQUALIFIER CHECK ───────────────────────────────────────────────
+function checkDisqualifiers(block) {
+  const flags = [];
+  if (/clinical.?stage/i.test(block) && !/revenue|commercialized/i.test(block))
+    flags.push('Clinical stage without revenue');
+  if (/going.?concern/i.test(block))
+    flags.push('Going concern language detected');
+  if (/class.?action|sec.?investig/i.test(block))
+    flags.push('Active class action or SEC investigation');
+  if (/toxic.?convert|death.?spiral/i.test(block))
+    flags.push('Toxic convertible / death spiral financing');
+  if (/market.?cap[^$\d]*\$[0-9]+[Mm]/.test(block)) {
+    const capMatch = block.match(/market.?cap[^$\d]*\$([\d.]+)\s*([MmBb])/i);
+    if (capMatch) {
+      const val = parseFloat(capMatch[1]);
+      const unit = capMatch[2].toUpperCase();
+      if (unit === 'M' && val < 150) flags.push('Market cap under $150M (hard floor)');
+    }
+  }
+  if (/cash.?runway.*(under|less|below).*(2|two|1|one).?quarter/i.test(block))
+    flags.push('Cash runway under 2 quarters');
+  return flags;
+}
 
-  // Split on numbered items or ticker patterns
+// ── LANE 5 DETECTION ─────────────────────────────────────────────────────
+function isLane5(block) {
+  return LANE5_PATTERNS.some(p => p.test(block)) ||
+    themes.includes('Lane 5 — Obvious Money');
+}
+
+// ── PARSE SCAN RESULTS ────────────────────────────────────────────────────
+function parseResults(text) {
+  const clean = stripPreamble(text);
   const blocks = clean.split(/\n(?=\d+\.\s+\*?\*?[A-Z]{2,5}|\*?\*?[A-Z]{2,5}\s*[-–—])/);
   const stocks = [];
 
-  for(const block of blocks){
-    if(!block.trim()) continue;
+  for (const block of blocks) {
+    if (!block.trim()) continue;
     const tickerMatch = block.match(/\*?\*?([A-Z]{2,5})\*?\*?\s*[-–—:]/);
-    if(!tickerMatch) continue;
-
+    if (!tickerMatch) continue;
     const ticker = tickerMatch[1];
-    if(SKIP_WORDS.includes(ticker)) continue;
+    if (SKIP_WORDS.includes(ticker)) continue;
 
     const priceMatch = block.match(/\$[\d.]+/);
-    const lines = block.split('\n').filter(l=>l.trim());
+    const lines = block.split('\n').filter(l => l.trim());
     const nameLine = lines[0] || '';
-    const name = nameLine.replace(/^\d+\.\s*/,'').replace(/\*?\*?[A-Z]{2,5}\*?\*?\s*[-–—:]\s*/,'').replace(/\$[\d.]+.*/,'').trim().substring(0,60);
+    const name = nameLine
+      .replace(/^\d+\.\s*/, '')
+      .replace(/\*?\*?[A-Z]{2,5}\*?\*?\s*[-–—:]\s*/, '')
+      .replace(/\$[\d.]+.*/, '')
+      .trim().substring(0, 60);
 
-    const details = lines.slice(1).map(l=>l.replace(/^[-•*\d.]+\s*/,'').trim()).filter(l=>l.length>5);
+    const details = lines.slice(1)
+      .map(l => l.replace(/^[-•*\d.]+\s*/, '').trim())
+      .filter(l => l.length > 5);
 
-    // Score for priority ranking
     let score = 0;
     const raw = block.toLowerCase();
-    if(/volume|spike|surge|unusual|\d+x average/i.test(raw)) score += 4;
-    if(/\d+\s*day|this\s*week|tomorrow|imminent/i.test(raw)) score += 3;
-    if(/contract|award|order|dod|ndaa/i.test(raw)) score += 2;
-    if(/earnings/i.test(raw)) score += 2;
-    if(/upgrade|initiat|analyst/i.test(raw)) score += 1;
-    if(/backlog/i.test(raw)) score += 1;
+    if (/volume|spike|surge|unusual|\d+x average/i.test(raw)) score += 4;
+    if (/\d+\s*day|this\s*week|tomorrow|imminent/i.test(raw)) score += 3;
+    if (/contract|award|order|dod|ndaa/i.test(raw)) score += 2;
+    if (/earnings/i.test(raw)) score += 2;
+    if (/upgrade|initiat|analyst/i.test(raw)) score += 1;
+    if (/backlog/i.test(raw)) score += 1;
+    if (/lane.?5|obvious.?money/i.test(raw)) score += 3;
 
-    // Check earnings proximity
     const daysToEarnings = earningsProximity(block);
+    const disqualifiers = checkDisqualifiers(block);
+    const lane5 = isLane5(block);
+    const hasVolume = /\d+x average|volume.*2x|unusual volume/i.test(block);
 
-    stocks.push({ticker, name, price: priceMatch?priceMatch[0]:null, details, score, raw: block, daysToEarnings});
+    stocks.push({ ticker, name, price: priceMatch ? priceMatch[0] : null, details, score, raw: block, daysToEarnings, disqualifiers, lane5, hasVolume });
   }
 
-  // Deduplicate — keep highest-scored instance of each ticker
+  // Deduplicate — keep highest score per ticker
   const seen = {};
   const deduped = [];
-  for(const s of stocks.filter(s=>s.ticker.length>=2).sort((a,b)=>b.score-a.score)){
-    if(!seen[s.ticker]){
+  for (const s of stocks.filter(s => s.ticker.length >= 2).sort((a,b) => b.score - a.score)) {
+    if (!seen[s.ticker]) {
       seen[s.ticker] = true;
       deduped.push(s);
     }
@@ -324,192 +456,341 @@ function parseResults(text) {
   return deduped;
 }
 
+// ── RUN SCAN ──────────────────────────────────────────────────────────────
 async function runScan(){
-  if(!themes.length||!caps.length){alert('Select at least one theme and market cap.');return;}
-  const btn=document.getElementById('scan-btn');
-  btn.disabled=true;
-  btn.innerHTML='<span class="spinner"></span> Scanning live markets...';
-  document.getElementById('scan-results').innerHTML='';
+  if (!themes.length || !caps.length) { alert('Select at least one theme and market cap.'); return; }
 
-  const capStr=caps.map(c=>c==='micro'?'Micro (<$300M)':c==='small'?'Small ($300M–$2B)':'Mid ($2B+)').join(', ');
-  const catNote=cat==='earnings'?'upcoming earnings within 30 days':cat==='contract'?'recent contract wins or orders':cat==='volume'?'unusual volume spikes (2x+ 30-day average)':'all catalyst types';
-  const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const btn = document.getElementById('scan-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Scanning live markets...';
+  document.getElementById('scan-results').innerHTML = '';
 
-  const prompt=`You are a stock screener for an active swing trader named Travis. Find exactly 5 specific, undiscovered stock ideas.
+  const capStr = caps.map(c => c === 'small' ? '$150M–$2B' : '$2B+').join(', ');
+  const catNote = cat === 'earnings' ? 'upcoming earnings within 30 days'
+    : cat === 'contract' ? 'recent contract wins or orders'
+    : cat === 'volume'   ? 'unusual volume spikes (2x+ 30-day average)'
+    : cat === 'catalyst' ? 'imminent hard catalyst within 14 days'
+    : 'all catalyst types';
+
+  const lane5Active = themes.includes('Lane 5 — Obvious Money');
+  const lane5Instruction = lane5Active ? `
+LANE 5 — OBVIOUS MONEY: You are authorized to surface ANY stock from ANY sector with no theme requirement if it clears all four criteria:
+1. Catalyst is undeniable and imminent (within 14 days)
+2. Entry is in range right now — not a chase
+3. Stop loss level is clearly definable
+4. Risk/reward is asymmetric by conservative math (minimum 2:1)
+Label these with [LANE 5] at the start of the entry.` : '';
+
+  const today = new Date().toLocaleDateString('en-US', {month:'long', day:'numeric', year:'numeric'});
+
+  const prompt = `You are a stock screener for Travis, an active swing trader with a strict rules-based framework.
+
+Find exactly 5 specific stock ideas matching these criteria:
 
 THEMES: ${themes.join(', ')}
 PRICE: Under $${maxPrice} per share
-MARKET CAP: ${capStr}
+MARKET CAP: ${capStr} — HARD MINIMUM $150M, do not surface anything below $150M market cap
 CATALYST FOCUS: ${catNote}
-EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX) — ALWAYS include AMEX
+EXCHANGES: NYSE, Nasdaq, NYSE American (AMEX)
 DO NOT SUGGEST (already owns): ${PORTFOLIO.join(', ')}
+${lane5Instruction}
 
-PRIORITY RANKING — rank results in this exact order:
-1. VOLUME ANOMALY: stocks showing 2x+ their 30-day average volume with no obvious news yet = institutional positioning (highest priority signal)
-2. HARD CATALYST within 14 days: DoD contract, earnings, FDA approval, partnership
-3. HIGH BACKLOG-TO-MARKET-CAP: backlog value close to or exceeding market cap = undervalued
+HARD DISQUALIFIERS — Do NOT surface any stock with:
+- Market cap under $150M
+- Clinical-stage biotech or medical device without commercialized revenue
+- Active SEC investigation or class action lawsuit
+- Going concern language in recent filings
+- Share dilution above 20% in last 90 days without revenue growth to justify it
+- Cash runway under 2 quarters at current burn rate
+- Earnings within 7 days (hard rules conflict — no entry allowed)
+- Toxic convertible notes or death spiral financing
+
+PRIORITY RANKING — rank results in this order:
+1. VOLUME ANOMALY: 2x+ 30-day average volume with no obvious news = institutional positioning
+2. HARD CATALYST within 14 days: DoD contract, FDA approval, Russell rebalancing, partnership
+3. HIGH BACKLOG-TO-MARKET-CAP: backlog close to or exceeding market cap = undervalued
 4. ANALYST INITIATION or upgrade in last 7 days
 
-CRITICAL: Hunt for overlooked names like Trio-Tech (TRT) or AXT Inc (AXTI) — real revenue, specific catalyst, under $15 where $500 buys meaningful shares. NOT well-known names. AMEX micro-caps are priority.
+Hunt for overlooked names with real revenue, specific catalysts, under target price where $500-1000 buys meaningful shares. NOT well-known mega-caps. AMEX and small-cap NYSE are priority.
 
-IMPORTANT OUTPUT RULE: Start your response DIRECTLY with "1. [TICKER]" — no preamble, no intro sentences, no "Here are my picks" or "Let me compile". Jump straight into the numbered list.
+IMPORTANT: Start your response DIRECTLY with "1. [TICKER]" — no preamble, no intro sentences. Jump straight into the list.
 
 Format EACH stock as:
 [NUMBER]. TICKER - Company Name - $CurrentPrice
-• Market cap tier and exchange
-• Volume: [today's volume] vs [30-day avg] — [X]x average (FLAG if 2x+)
-• Backlog-to-market-cap: [ratio if applicable]
-• ONE specific catalyst with exact date and dollar amount
+• Market cap and exchange
+• Volume: [today] vs [30-day avg] — [X]x average (FLAG if 2x+)
+• Backlog-to-market-cap: [ratio or N/A]
+• ONE specific catalyst with exact date and dollar amount if known
 • 2-sentence thesis
 • Entry: $X–$Y | Stop: $Z | Target: $T
-• Risk: LOW / MEDIUM / HIGH
-• Earnings: [date or N/A]
+• Earnings: [date] — FLAG if within 7 days as RULES CONFLICT
 • Days to catalyst: [number]
+• Hard disqualifiers present: NONE (or list any found)
 
 Today: ${today}`;
 
-  try{
-    const res=await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1500,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1800,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
       })
     });
-    const data=await res.json();
+    const data = await res.json();
 
-    if(data.error){
-      document.getElementById('scan-results').innerHTML=`<p style="color:#c0392b;font-size:13px;padding:12px 0">API Error: ${data.error.message}</p>`;
-      btn.disabled=false;btn.innerHTML='▶ Run Scan';
+    if (data.error) {
+      document.getElementById('scan-results').innerHTML =
+        `<p style="color:#c0392b;font-size:13px;padding:12px 0">API Error: ${data.error.message}</p>`;
+      btn.disabled = false; btn.innerHTML = '▶ Run Scan';
       return;
     }
 
-    const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
-    const stocks=parseResults(text);
+    const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+    const stocks = parseResults(text);
 
-    if(stocks.length>=2){
-      let actionRank = 0; // counts only non-earnings-flagged cards
-      document.getElementById('scan-results').innerHTML=stocks.map((s,i)=>{
-        // Earnings proximity overrides tier badge
-        let tierLabel;
-        let earningsWarning = '';
-        let cardClass = 'rcard';
+    if (stocks.length >= 2) {
+      let actionRank = 0;
+      document.getElementById('scan-results').innerHTML = stocks.map((s, i) => {
+        let tierLabel, cardClass, alertHtml = '';
 
-        if(s.daysToEarnings !== null) {
+        if (s.disqualifiers.length > 0) {
+          tierLabel = `<span class="tier-badge tier-disq">⛔ DISQUALIFIED</span>`;
+          alertHtml = `<div class="disq-alert">⛔ <strong>Hard rules conflict:</strong> ${s.disqualifiers.join(' · ')}</div>`;
+          cardClass = 'rcard disqualified';
+        } else if (s.daysToEarnings !== null) {
           const dayWord = s.daysToEarnings === 0 ? 'TODAY' : s.daysToEarnings === 1 ? 'TOMORROW' : `IN ${s.daysToEarnings} DAYS`;
           tierLabel = `<span class="tier-badge tier-warn">⚠ EARNINGS ${dayWord}</span>`;
-          earningsWarning = `<div class="earnings-alert">⛔ Earnings ${dayWord} — stops don't protect AH gaps. Per your rules: DO NOT ENTER. Wait for post-earnings setup.</div>`;
+          alertHtml = `<div class="earnings-alert">⛔ Earnings ${dayWord} — stops don't protect AH gaps. DO NOT ENTER. Wait for post-earnings setup.</div>`;
           cardClass = 'rcard earnings-warn';
+        } else if (s.lane5) {
+          tierLabel = `<span class="tier-badge tier-l5">💡 LANE 5</span>`;
+          alertHtml = `<div class="lane5-flag">💡 Lane 5 — Obvious Money flag. No theme required. Verify all 4 criteria: imminent catalyst, entry in range, stop definable, 2:1+ risk/reward.</div>`;
+          cardClass = actionRank === 0 ? 'rcard lane5 open' : 'rcard lane5';
+          actionRank++;
         } else {
-          tierLabel = actionRank===0
+          tierLabel = actionRank === 0
             ? '<span class="tier-badge tier-1">▲ ACT FIRST</span>'
-            : actionRank===1
+            : actionRank === 1
             ? '<span class="tier-badge tier-2">▲ ACT SOON</span>'
             : '<span class="tier-badge tier-3">◆ WATCH</span>';
+          cardClass = 'rcard';
           actionRank++;
         }
 
-        const conflict=PORTFOLIO.includes(s.ticker)?'<div class="conflict">⚠ Already in portfolio</div>':'';
-        const hasVolume = /\d+x average|volume.*2x|unusual volume/i.test(s.raw);
-        const volFlag = hasVolume ? '<span style="font-size:10px;color:#c0392b;margin-left:6px;font-weight:700">📈 VOL SPIKE</span>' : '';
+        const conflict = PORTFOLIO.includes(s.ticker)
+          ? '<div class="conflict">⚠ Already in portfolio — review before adding</div>' : '';
+        const volFlag = s.hasVolume
+          ? '<span class="vol-flag">📈 VOL SPIKE</span>' : '';
 
-        return `<div class="${cardClass}" id="rc${i}" onclick="toggleCard(${i})">
+        return `<div class="${cardClass}" id="rc${i}" onclick="toggleCard(${i}, this)">
           <div class="rhead">
             <div>
-              <span class="rticker">${s.ticker}</span>${s.price?`<span class="rprice">${s.price}</span>`:''}${volFlag}
+              <span class="rticker">${s.ticker}</span>${s.price ? `<span class="rprice">${s.price}</span>` : ''}${volFlag}
               <div class="rname">${s.name}</div>
             </div>
             ${tierLabel}
           </div>
-          ${conflict}
-          ${earningsWarning}
+          ${conflict}${alertHtml}
           <div class="rdetails" id="rd${i}" style="display:none">
-            ${s.details.map(d=>`<div class="rdetail">${d}</div>`).join('')}
+            ${s.details.map(d => `<div class="rdetail">${d}</div>`).join('')}
           </div>
         </div>`;
       }).join('');
     } else {
-      // Raw fallback — still strip preamble
-      const cleanText = stripPreamble(text);
-      document.getElementById('scan-results').innerHTML=`<div class="output">${cleanText}</div>`;
+      document.getElementById('scan-results').innerHTML =
+        `<div class="output">${stripPreamble(text)}</div>`;
     }
-  }catch(e){
-    document.getElementById('scan-results').innerHTML='<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check connection and try again.</p>';
+  } catch(e) {
+    document.getElementById('scan-results').innerHTML =
+      '<p style="color:#c0392b;font-size:13px;padding:12px 0">Scan failed — check connection and try again.</p>';
   }
-  btn.disabled=false;btn.innerHTML='▶ Run Scan';
+  btn.disabled = false; btn.innerHTML = '▶ Run Scan';
 }
 
-function toggleCard(i){
-  document.getElementById('rc'+i).classList.toggle('open');
-  const d=document.getElementById('rd'+i);
-  d.style.display=d.style.display==='none'?'block':'none';
+function toggleCard(i, el) {
+  if (el.classList.contains('earnings-warn') || el.classList.contains('disqualified')) return;
+  el.classList.toggle('open');
+  const d = document.getElementById('rd' + i);
+  d.style.display = d.style.display === 'none' ? 'block' : 'none';
 }
 
+// ── VET TICKER ────────────────────────────────────────────────────────────
 async function vetTicker(){
-  const ticker=document.getElementById('vet-input').value.trim().toUpperCase();
-  if(!ticker)return;
-  const btn=document.getElementById('vet-btn');
-  const out=document.getElementById('vet-out');
-  btn.disabled=true;btn.textContent='...';
-  out.innerHTML=`<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Vetting ${ticker}...</p>`;
+  const ticker = document.getElementById('vet-input').value.trim().toUpperCase();
+  if (!ticker) return;
 
-  const inPort=PORTFOLIO.includes(ticker);
-  const portCtx=inPort?`Travis already owns ${ticker}.`:`Travis does not currently own ${ticker}.`;
-  const today=new Date().toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'});
+  const btn = document.getElementById('vet-btn');
+  const out = document.getElementById('vet-out');
+  btn.disabled = true; btn.textContent = '...';
+  out.innerHTML = `<p style="font-size:13px;color:#888;padding:12px 0"><span class="spinner"></span> Running full framework vet on ${ticker}...</p>`;
 
-  const prompt=`Vet this stock quickly and directly for an active swing trader named Travis.
-${portCtx} Current portfolio: ${PORTFOLIO.join(', ')}.
+  const inPort = PORTFOLIO.includes(ticker);
+  const portCtx = inPort ? `Travis already owns ${ticker} — this is a review of an existing position.` : `Travis does not currently own ${ticker}.`;
+  const today = new Date().toLocaleDateString('en-US', { month:'long', day:'numeric', year:'numeric' });
 
-TICKER: ${ticker}
+  const prompt = `You are vetting a stock for Travis, a disciplined swing trader with a strict rules-based framework. Provide a direct, no-fluff analysis.
 
-Provide exactly this, in order:
-1. What the company does (2 sentences max)
-2. Current price and market cap tier (micro/small/mid/large)
-3. Volume today vs 30-day average — is there a volume anomaly?
-4. Most recent specific catalyst with date/dollar amount
-5. Bull thesis (2 sentences)
-6. Biggest risk (1 sentence)
-7. Entry range | Stop loss | Price target
-8. Earnings date (or N/A)
-9. Backlog-to-market-cap ratio (if applicable)
-10. Portfolio fit — sector overlap concern?
-11. VERDICT: ACT NOW / WATCHLIST / PASS — one sentence reason
+${portCtx}
+Current portfolio: ${PORTFOLIO.join(', ')}
+Today: ${today}
 
-Be direct. No fluff. Today: ${today}`;
+TICKER TO VET: ${ticker}
 
-  try{
-    const res=await fetch(API_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        messages:[{role:'user',content:prompt}]
+FIRST — Check all hard disqualifiers. If ANY are true, state DISQUALIFIED immediately:
+- Market cap under $150M
+- Clinical-stage biotech/medtech without commercialized revenue
+- Active SEC investigation or class action lawsuit
+- Going concern language in recent SEC filings
+- Share dilution above 20% in last 90 days without proportional revenue growth
+- Cash runway under 2 quarters at current burn rate
+- Earnings within 7 days (hard entry block)
+- Toxic convertible notes or death spiral financing
+
+THEN provide exactly this structured output with these exact field labels:
+
+COMPANY: [Full company name and what it does in one sentence]
+PRICE: [Current price] | MKT CAP: [Market cap — flag if under $150M]
+LANE: [Which of Travis's lanes this fits: AI/Semis | Defense | Longevity | Consumer AI | Energy | Lane 5 Obvious Money | None]
+DISQUALIFIERS: [NONE — or list any found]
+VOLUME: [Today's volume vs 30-day average — flag if 2x+]
+CATALYST: [Most specific catalyst with exact date and dollar amount if known]
+EARNINGS DATE: [Exact date or projected — FLAG if within 7 days]
+CASH RUNWAY: [Quarters of runway at current burn rate]
+DILUTION RISK: [Share count trend last 6 months — is it structural?]
+GOVERNANCE: [Any insider selling, SEC flags, class actions, or CLEAN]
+BULL THESIS: [2 sentences max — the specific reason this works]
+BEAR THESIS: [Biggest single risk — 1 sentence]
+ENTRY: [$X–$Y] | STOP: [$Z] | TARGET: [$T]
+POSITION SIZE: [Which tier: up to $1,000 high conviction / $500 medium / $300 governance flag / $0 disqualified]
+VERDICT: [ACT NOW / WATCHLIST / PASS / DISQUALIFIED] — [one sentence reason]
+THREE-AI NOTE: [One thing Grok should check on momentum and one thing Gemini should verify on financials]`;
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1200,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        messages: [{ role: 'user', content: prompt }]
       })
     });
-    const data=await res.json();
-    if(data.error){
-      out.innerHTML=`<p style="color:#c0392b;font-size:13px">API Error: ${data.error.message}</p>`;
+    const data = await res.json();
+
+    if (data.error) {
+      out.innerHTML = `<p style="color:#c0392b;font-size:13px">API Error: ${data.error.message}</p>`;
     } else {
-      const text=data.content.filter(b=>b.type==='text').map(b=>b.text).join('\n');
-      out.innerHTML=`<div class="output">${text}</div>`;
+      const text = data.content.filter(b => b.type === 'text').map(b => b.text).join('\n');
+      out.innerHTML = renderVetCard(ticker, text);
     }
-  }catch(e){
-    out.innerHTML='<p style="color:#c0392b;font-size:13px">Vet failed — check connection.</p>';
+  } catch(e) {
+    out.innerHTML = '<p style="color:#c0392b;font-size:13px">Vet failed — check connection.</p>';
   }
-  btn.disabled=false;btn.textContent='Vet It';
+  btn.disabled = false; btn.textContent = 'Vet It';
 }
 
-document.getElementById('vet-input').addEventListener('keydown',function(e){if(e.key==='Enter')vetTicker();});
+// ── RENDER VET OUTPUT AS STRUCTURED CARD ─────────────────────────────────
+function renderVetCard(ticker, text) {
+  // Extract field values from structured output
+  function field(label) {
+    const re = new RegExp(label + '[:\\s]+([^\\n]+)', 'i');
+    const m = text.match(re);
+    return m ? m[1].trim() : null;
+  }
+
+  const disq = field('DISQUALIFIERS');
+  const verdict = field('VERDICT');
+  const lane = field('LANE');
+  const company = field('COMPANY');
+  const price = field('PRICE');
+  const mktcap = price ? price.split('|')[1] : null;
+  const priceVal = price ? price.split('|')[0] : null;
+  const volume = field('VOLUME');
+  const catalyst = field('CATALYST');
+  const earnings = field('EARNINGS DATE');
+  const cashRun = field('CASH RUNWAY');
+  const dilution = field('DILUTION RISK');
+  const governance = field('GOVERNANCE');
+  const bull = field('BULL THESIS');
+  const bear = field('BEAR THESIS');
+  const entry = field('ENTRY');
+  const stop = field('STOP');
+  const target = field('TARGET');
+  const sizing = field('POSITION SIZE');
+  const threeAI = field('THREE-AI NOTE');
+
+  const isDisq = disq && !/none/i.test(disq);
+  const isLane5Card = lane && /lane.?5|obvious.?money/i.test(lane);
+
+  // Verdict badge class
+  const verdictClass = !verdict ? 'verdict-watch'
+    : /ACT NOW/i.test(verdict) ? 'verdict-buy'
+    : /WATCHLIST/i.test(verdict) ? 'verdict-watch'
+    : /DISQUALIFIED/i.test(verdict) ? 'verdict-disq'
+    : 'verdict-pass';
+
+  const verdictText = verdict ? verdict.split('—')[0].trim() : 'REVIEW';
+
+  // Earnings flag
+  const earningsFlag = earnings && !/n\/a/i.test(earnings) && earningsProximity(text) !== null;
+
+  // Build row helper
+  function row(label, val, cls) {
+    if (!val) return '';
+    return `<div class="vet-row">
+      <div class="vet-label">${label}</div>
+      <div class="vet-val ${cls || ''}">${val}</div>
+    </div>`;
+  }
+
+  let bannerHtml = '';
+  if (isDisq) {
+    bannerHtml = `<div class="vet-disq-banner">⛔ DISQUALIFIED — ${disq}</div>`;
+  } else if (isLane5Card) {
+    bannerHtml = `<div class="vet-l5-banner">💡 LANE 5 — OBVIOUS MONEY · No theme required · Verify all 4 criteria before entering</div>`;
+  }
+
+  return `<div class="vet-card">
+    <div class="vet-header">
+      <div class="vet-ticker-big">${ticker}</div>
+      <div class="vet-verdict ${verdictClass}">${verdictText}</div>
+    </div>
+    ${bannerHtml}
+    <div class="vet-body">
+      ${row('Company', company)}
+      ${row('Price / Cap', priceVal && mktcap ? priceVal + ' ' + mktcap : (priceVal || mktcap))}
+      ${row('Lane', lane, isLane5Card ? 'warn' : '')}
+      ${row('Disqualifiers', disq, isDisq ? 'disq-val' : 'good')}
+      ${row('Volume', volume, volume && /2x|3x|4x|5x|spike|anomaly/i.test(volume) ? 'flag' : '')}
+      ${row('Catalyst', catalyst)}
+      ${row('Earnings Date', earnings, earningsFlag ? 'flag' : '')}
+      ${row('Cash Runway', cashRun, cashRun && /1 quarter|under|less/i.test(cashRun) ? 'flag' : '')}
+      ${row('Dilution Risk', dilution, dilution && /high|structural|20%|25%|30%/i.test(dilution) ? 'flag' : '')}
+      ${row('Governance', governance, governance && !/clean/i.test(governance) ? 'warn' : 'good')}
+      ${row('Bull Thesis', bull)}
+      ${row('Bear Thesis', bear, 'warn')}
+      ${row('Entry / Stop / Target', entry && stop && target ? entry + ' · Stop ' + stop + ' · Target ' + target : null)}
+      ${row('Position Size', sizing)}
+      ${row('Three-AI Note', threeAI)}
+    </div>
+  </div>`;
+}
+
+// ── MISC ──────────────────────────────────────────────────────────────────
+document.getElementById('vet-input').addEventListener('keydown', function(e){
+  if (e.key === 'Enter') vetTicker();
+});
 
 function showTab(name){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['screener','signal'][i]===name));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
+  document.querySelectorAll('.tab').forEach((t, i) =>
+    t.classList.toggle('active', ['screener','signal'][i] === name));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
 }
 
 sync();
